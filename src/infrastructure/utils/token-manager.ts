@@ -6,8 +6,8 @@ export class TokenManager {
 
     private static refreshTokenSecret = process.env.JWT_REFRESH_SECRET || 'refreshSecret';
 
-    static generateAccessToken(user: IUser): string {
-      return jwt.sign({ userId: user.id, role: user.role }, this.accessTokenSecret, { expiresIn: '15m' });
+    static generateAccessToken<T>(data: T, expiredIn?:string): string {
+      return jwt.sign({ data }, this.accessTokenSecret, { expiresIn: expiredIn || '15m' });
     }
 
     static generateRefreshToken(user: IUser): string {

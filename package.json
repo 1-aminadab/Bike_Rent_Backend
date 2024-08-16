@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@types/axios": "^0.14.0",
     "@types/bcryptjs": "^2.4.6",
+    "axios": "^1.7.4",
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
