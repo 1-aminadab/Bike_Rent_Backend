@@ -5,6 +5,7 @@ import { body, validationResult } from 'express-validator';
 import { PasswordResetService } from '../service/password-reset.service';
 import { logger } from '../../logger';
 
+const passwordResetService = new PasswordResetService()
 class PasswordResetController {
   async sendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
