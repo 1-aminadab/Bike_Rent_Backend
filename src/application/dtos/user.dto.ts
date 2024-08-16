@@ -2,7 +2,7 @@
 // src/application/dtos/user.dto.ts
 
 import {
-  IsNotEmpty, IsString, MinLength, IsPhoneNumber, IsEnum
+  IsEmail, IsNotEmpty, IsString, MinLength, IsPhoneNumber, IsEnum
 } from 'class-validator';
 import { UserRole } from '../../domain/enums/user.enum';
 
@@ -24,6 +24,10 @@ export class UserDto {
     nationalIdNumber: string;
 
     @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty()
     @MinLength(6)
     password: string;
 
@@ -32,11 +36,11 @@ export class UserDto {
 }
 
 export class LoginDto {
-  @IsNotEmpty()
-  @IsPhoneNumber(null) 
-  phoneNumber: string;
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
 
-  @IsNotEmpty()
-  @MinLength(6)
-  password: string;
+    @IsNotEmpty()
+    @MinLength(6)
+    password: string;
 }
