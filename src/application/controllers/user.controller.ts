@@ -3,7 +3,7 @@ import { userService } from '../service/user.service';
 import { logger } from '../../logger';
 
 class UserController {
-  async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getUserById(req: Request, res: Response): Promise<void> {
     try {
       const user = await userService.getUserById(req.params.id);
       if (!user) {
@@ -17,7 +17,7 @@ class UserController {
     }
   }
 
-  async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const user = await userService.updateUser(req.params.id, req.body);
       if (!user) {
@@ -31,7 +31,7 @@ class UserController {
     }
   }
 
-  async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const user = await userService.deleteUser(req.params.id);
       if (!user) {
@@ -45,7 +45,7 @@ class UserController {
     }
   }
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const users = await userService.getAllUsers();
       res.status(200).json(users);

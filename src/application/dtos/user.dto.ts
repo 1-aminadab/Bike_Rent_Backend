@@ -2,7 +2,8 @@
 // src/application/dtos/user.dto.ts
 
 import {
-  IsEmail, IsNotEmpty, IsString, MinLength, IsPhoneNumber, IsEnum
+  IsEmail, IsNotEmpty, IsString, MinLength, IsPhoneNumber, IsEnum,
+  IsOptional
 } from 'class-validator';
 import { UserRole } from '../../domain/enums/user.enum';
 
@@ -16,15 +17,15 @@ export class UserDto {
     lastName: string;
 
     @IsNotEmpty()
-    @IsPhoneNumber(null) // Add country code here as per your requirement, e.g., 'US' for the United States
+    @IsPhoneNumber(null)
     phoneNumber: string;
 
     @IsNotEmpty()
     @IsString()
     nationalIdNumber: string;
 
-    @IsNotEmpty()
     @IsEmail()
+    @IsOptional()
     email: string;
 
     @IsNotEmpty()
@@ -38,7 +39,7 @@ export class UserDto {
 export class LoginDto {
     @IsNotEmpty()
     @IsEmail()
-    email: string;
+    phoneNumber: string;
 
     @IsNotEmpty()
     @MinLength(6)

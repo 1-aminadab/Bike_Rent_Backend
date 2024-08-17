@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import { NextFunction, Response } from 'express';
-import { authService } from '../../application/service/auth.service';
 import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
+import { TokenManager } from '../utils/token-manager';
 
 export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const token = req.cookies.accessToken;
@@ -10,7 +10,7 @@ export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: 
     return res.status(401).json({ message: 'Access Denied' });
   }
   try {
-    const decoded = authService.verifyAccessToken(token);
+    const decoded = TokenManager.verifyAccessToken(token);
     req.user = decoded;
   } catch (error) {
     return res.status(403).json({ message: 'Invalid token' });

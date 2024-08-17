@@ -1,43 +1,45 @@
 // application/controllers/auth.controller.ts
 import { Request, Response } from 'express';
-import { AuthService } from '../service/auth.service';
+import { authService } from '../service/auth.service';
 import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 
-const authService = new AuthService();
+class AuthController {
+  async register(req: Request, res: Response) {
+    try {
+      const user = await authService.register(req.body);
+      return res.status(201).json(user);
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+  };
 
-export const register = async (req: Request, res: Response) => {
-  try {
-    const user = await authService.register(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+  async login(req: Request, res: Response) {
+    try {
+      const message = await authService.login(req.body, res);
+      return res.status(200).json({ message });
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+  };
 
-export const login = async (req: Request, res: Response) => {
-  try {
-    const message = await authService.login(req.body, res);
-    res.status(200).json({ message });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+  async logout(req: AuthenticatedRequest, res: Response) {
+    try {
+      const userId = req.user._id;
+      await authService.logout(userId, res);
+      return res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+  };
 
-export const logout = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const userId = req.user._id; // Assuming `req.user` is populated by middleware
-    await authService.logout(userId, res);
-    res.status(200).json({ message: 'Logout successful' });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  async refreshTokens(req: Request, res: Response) {
+    try {
+      await authService.refreshToken(req, res);
+      return res.status(200).json({ message: 'Tokens refreshed' });
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
   }
-};
+}
 
-export const refreshTokens = async (req: Request, res: Response) => {
-  try {
-    await authService.refreshToken(req, res);
-    res.status(200).json({ message: 'Tokens refreshed' });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+export const authController = new AuthController();
