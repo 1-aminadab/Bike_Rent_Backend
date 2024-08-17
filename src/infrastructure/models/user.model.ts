@@ -12,6 +12,6 @@ const UserSchema: Schema = new Schema({
   password: { type: String, required: true },
   verified: { type: Boolean, default: false },
   role: { type: String, enum: Object.values(UserRole), default: UserRole.User }
+}, {
+  timestamps: true
 });
-
-export const UserModel = mongoose.model<IUser>('User', UserSchema);
