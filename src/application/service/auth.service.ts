@@ -21,6 +21,9 @@ class AuthService implements IUserService {
   }
 
   public async register(userDto: UserDto): Promise<IUser> {
+    if (userDto.email && validateEmail(userDto.email)) {
+      throw new Error('Invalid email format!');
+    }
     if (validatePhoneNumber(userDto.phoneNumber)) {
       throw new Error('Invalid phone number format');
     }
