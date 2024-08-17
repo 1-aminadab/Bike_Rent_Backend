@@ -1,10 +1,10 @@
 {
-  "name": "Bike-Rent-Backent",
+  "name": "Bike-Rent-Backend",
   "version": "1.0.0",
-  "description": "Boilerplate for Bike-Rent-Backent",
+  "description": "Boilerplate for Bike-Rent-Backend",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kvvignesh/Bike-Rent-Backent"
+    "url": "https://github.com/kvvignesh/Bike-Rent-Backend"
   },
   "keywords": [
     "TypeScript",

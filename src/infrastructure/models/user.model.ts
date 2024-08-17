@@ -7,7 +7,7 @@ const UserSchema: Schema = new Schema({
   lastName: { type: String, required: true },
   phoneNumber: { type: String, required: true, unique: true },
   nationalIdNumber: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: false, unique: true },
   refreshToken: { type: String, required: false },
   password: { type: String, required: true },
   verified: { type: Boolean, default: false },

@@ -5,6 +5,7 @@ import { IUser, IUserService } from '../../domain/interface/user.interface';
 import { LoginDto, UserDto } from '../dtos/user.dto';
 import { TokenManager } from '../../infrastructure/utils/token-manager';
 import { logger } from '../../logger';
+import { validateEmail, validatePassword, validatePhoneNumber } from '../../infrastructure/utils/validator';
 
 class AuthService implements IUserService {
   private async hashPassword(password: string): Promise<string> {
@@ -20,8 +21,14 @@ class AuthService implements IUserService {
   }
 
   public async register(userDto: UserDto): Promise<IUser> {
-    const userExist = await this.findUser(userDto.phoneNumber);
-    if (userExist) throw new Error('User already exists');
+    if (validatePhoneNumber(userDto.phoneNumber)) {
+      throw new Error('Invalid phone number format');
+    }
+    if (validatePassword(userDto.password)) {
+      throw new Error('Password does not meet security requirements');
+    }
+    const user = await this.findUser(userDto.phoneNumber);
+    if (user) throw new Error('User already exists');
 
     const hashedPassword = await this.hashPassword(userDto.password);
     const newUser = new UserModel({ ...userDto, password: hashedPassword });

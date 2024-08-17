@@ -1,4 +1,4 @@
-# Bike-Rent-Backent Boilerplate
+# Bike-Rent-Backend Boilerplate
 This repo can be used as a starting point for backend development with Nodejs, Express, TypeScript and MongoDB.
 
 A few things to note in the project:
@@ -20,7 +20,7 @@ A few things to note in the project:
 #### 1. Clone this repo
 
 ```
-$ git clone https://github.com/kvvignesh/Bike-Rent-Backent.git your-app-name
+$ git clone https://github.com/kvvignesh/Bike-Rent-Backend.git your-app-name
 $ cd your-app-name
 ```
 
