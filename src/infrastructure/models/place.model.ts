@@ -1,10 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-
-export interface ILocation {
-    longitude: number;
-    latitude: number;
-}
-
+import { ILocation, LocationSchema } from './location.model';
 export interface IPlace extends Document {
     name: string;
     location: ILocation;
@@ -14,10 +9,7 @@ export interface IPlace extends Document {
 
 const PlaceSchema: Schema = new Schema({
     name: { type: String, required: true },
-    location: {
-      longitude: { type: Number, required: true },
-      latitude: { type: Number, required: true },
-    },
+    location: LocationSchema,
     address: { type: String },
     created_at: { type: Date, default: Date.now },
   });

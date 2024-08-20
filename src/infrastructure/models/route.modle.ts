@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { ILocation } from './place.model';
+import { ILocation } from './location.model';
+import { LocationSchema } from './location.model';
 
 export interface IRoutePath {
   timestamp: Date;
@@ -23,12 +24,8 @@ const RouteSchema: Schema = new Schema({
   estimated_duration: { type: Number },
   route_path: [
     {
-      timestamp: { type: Date, default: Date.now },
-      location: {
-        longitude: { type: Number, required: true },
-        latitude: { type: Number, required: true },
-      },
-      event: { type: String, enum: ['start', 'pause', 'resume', 'stop'], required: true },
+      name: { type: String, require: false},
+      location: LocationSchema,
     },
   ],
   created_at: { type: Date, default: Date.now },

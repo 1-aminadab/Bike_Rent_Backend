@@ -2,10 +2,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IRental extends Document {
   user_id: mongoose.Types.ObjectId;
+  assigned_by: mongoose.Types.ObjectId;
   bike_id: mongoose.Types.ObjectId;
   start_time: Date;
-  end_time?: Date;
-  status: 'ongoing' | 'completed' | 'canceled';
   start_place_id: mongoose.Types.ObjectId;
   end_place_id?: mongoose.Types.ObjectId;
   route_id?: mongoose.Types.ObjectId;
@@ -15,6 +14,7 @@ export interface IRental extends Document {
 
 const RentalSchema: Schema = new Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  assigned_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', require: true},
   bike_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bike', required: true },
   start_time: { type: Date, required: true },
   end_time: { type: Date },

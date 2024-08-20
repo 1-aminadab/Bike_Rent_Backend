@@ -1,5 +1,5 @@
 import { IUser } from '../../domain/interface/user.interface';
-import { UserModel } from '../../infrastructure/models/user.model';
+import UserModel  from '../../infrastructure/models/user.model';
 import { logger } from '../../logger';
 
 class UserService {

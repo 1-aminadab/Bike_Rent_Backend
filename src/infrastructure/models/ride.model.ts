@@ -1,12 +1,11 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import { ILocation, LocationSchema } from './location.model';
+
 
 export interface IBike extends Document {
-  model: string;
+  bikeModel: string;
   status: 'available' | 'rented' | 'maintenance';
-  current_location: {
-    longitude: number;
-    latitude: number;
-  };
+  current_location: ILocation;
   battery_level?: number;
   last_serviced?: Date;
   created_at: Date;
@@ -14,12 +13,9 @@ export interface IBike extends Document {
 }
 
 const BikeSchema: Schema = new Schema({
-  model: { type: String },
+  bikeModel: { type: String },
   status: { type: String, enum: ['available', 'rented', 'maintenance'], required: true },
-  current_location: {
-    longitude: { type: Number, required: true },
-    latitude: { type: Number, required: true },
-  },
+  current_location: LocationSchema,
   battery_level: { type: Number },
   last_serviced: { type: Date },
   created_at: { type: Date, default: Date.now },

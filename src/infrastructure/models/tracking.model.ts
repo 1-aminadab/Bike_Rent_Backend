@@ -1,12 +1,11 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { ILocation } from './place.model';
+import { ILocation } from './location.model';
 
 export interface ITrackingData {
   timestamp: Date;
   location: ILocation;
   speed?: number;
-  battery_level?: number;
-  event: 'start' | 'pause' | 'resume' | 'stop' | 'incident';
+  event: 'start' | 'pause' | 'resume' | 'stop';
   weather?: {
     temperature?: number;
     conditions?: string;
@@ -48,7 +47,6 @@ const TrackingSchema: Schema = new Schema({
         temperature: { type: Number },
         conditions: { type: String },
       },
-      altitude: { type: Number },
       distance_travelled: { type: Number },
     },
   ],
