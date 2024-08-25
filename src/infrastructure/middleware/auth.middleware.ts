@@ -12,6 +12,7 @@ export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: 
   try {
     const decoded = TokenManager.verifyAccessToken(token);
     req.user = decoded;
+    next()
   } catch (error) {
     return res.status(403).json({ message: 'Invalid token' });
   }

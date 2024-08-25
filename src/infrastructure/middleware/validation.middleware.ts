@@ -20,5 +20,5 @@ function validationMiddleware<T>(type: any):RequestHandler {
     });
   };
 }
-
+ 
 export default validationMiddleware;
