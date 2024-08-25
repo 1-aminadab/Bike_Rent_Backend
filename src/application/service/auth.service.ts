@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { UserModel } from '../../infrastructure/models/user.model';
+import UserModel  from '../../infrastructure/models/user.model';
 import { IUser, IUserService } from '../../domain/interface/user.interface';
 import { LoginDto, UserDto } from '../dtos/user.dto';
 import { TokenManager } from '../../infrastructure/utils/token-manager';

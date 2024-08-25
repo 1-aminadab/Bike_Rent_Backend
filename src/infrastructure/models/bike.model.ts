@@ -13,6 +13,7 @@ interface IBike extends Document {
 const BikeSchema: Schema = new Schema({
   bikeId: { type: String, required: true, unique: true },
   isAvailable: { type: Boolean, required: true, default: true },
+  
   location: {
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true }
