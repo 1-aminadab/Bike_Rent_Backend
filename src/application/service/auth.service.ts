@@ -6,6 +6,9 @@ import { LoginDto, UserDto } from '../dtos/user.dto';
 import { TokenManager } from '../../infrastructure/utils/token-manager';
 import { logger } from '../../logger';
 import { validateEmail, validatePassword, validatePhoneNumber } from '../../infrastructure/utils/validator';
+import { PasswordResetService } from './password-reset.service';
+
+const otpService = new PasswordResetService();
 
 class AuthService implements IUserService {
   private async hashPassword(password: string): Promise<string> {
@@ -20,26 +23,43 @@ class AuthService implements IUserService {
     return UserModel.findOne({ phoneNumber });
   }
 
-  public async register(userDto: UserDto): Promise<IUser> {
-    if (userDto.email && validateEmail(userDto.email)) {
-      throw new Error('Invalid email format!');
+  public async register(userDto: UserDto): Promise<any> {
+    if (userDto.email && !validateEmail(userDto.email)) {
+        throw new Error('Invalid email format!');
     }
-    if (validatePhoneNumber(userDto.phoneNumber)) {
-      throw new Error('Invalid phone number format');
+    if (!validatePhoneNumber(userDto.phoneNumber)) {
+        throw new Error('Invalid phone number format');
     }
-    if (validatePassword(userDto.password)) {
-      throw new Error('Password does not meet security requirements');
+    if (!validatePassword(userDto.password)) {
+        throw new Error('Password does not meet security requirements');
     }
-    const user = await this.findUser(userDto.phoneNumber);
-    if (user) throw new Error('User already exists');
+    
+    const existingUser = await this.findUser(userDto.phoneNumber);
+    if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await this.hashPassword(userDto.password);
-    const newUser = new UserModel({ ...userDto, password: hashedPassword });
+    const newUser = new UserModel({
+        ...userDto,
+        password: hashedPassword,
+        verified: false,
+        status: true,
+        refreshToken: ''
+    });
     await newUser.save();
-    return newUser;
-  }
+// send otp
+console.log('user registered....')
+    const otpResponse = await otpService.sendOtp(newUser.phoneNumber);
+    if (!otpResponse.success) {
+      throw new Error(otpResponse.message);
+    }
+    // Return a token to validate the OTP
+    return { success: true, message: 'User registered, please verify OTP', token: otpResponse.token };
 
-  public async login(credentials: LoginDto, res: Response): Promise<string> {
+    // return newUser;
+}
+
+
+  public async login(credentials: LoginDto, res: Response): Promise<any> {
     const user = await UserModel.findOne({ phoneNumber: credentials.phoneNumber });
     if (!user) throw new Error('Invalid credentials');
 
@@ -51,8 +71,12 @@ class AuthService implements IUserService {
     user.refreshToken = refreshToken;
     await user.save();
 
+    const  {password, refreshToken:_, ...userData} = user.toObject();
     this.setCookies(res, accessToken, refreshToken);
-    return 'Login successful';
+    return {
+      message: 'loged in successfully',
+      data:userData
+    };
   }
 
   public async logout(userId: string, res: Response): Promise<void> {

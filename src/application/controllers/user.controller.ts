@@ -48,7 +48,14 @@ class UserController {
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const users = await userService.getAllUsers();
-      res.status(200).json(users);
+      
+      // Remove password and refreshToken fields from each user object
+      const sanitizedUsers = users.map(user => {
+        const { password, refreshToken, ...userWithoutSensitiveInfo } = user.toObject();
+        return userWithoutSensitiveInfo;
+      });
+  
+      res.status(200).json(sanitizedUsers);
     } catch (error) {
       logger.error('Error in getAllUsers controller', { error });
       res.status(500).json({ message: 'Internal server error' });

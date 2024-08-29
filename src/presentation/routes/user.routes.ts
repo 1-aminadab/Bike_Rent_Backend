@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { authenticateJWT } from '../../infrastructure/middleware/auth.middleware';
+import { authenticateJWT, authorizeRoles } from '../../infrastructure/middleware/auth.middleware';
 import { userController } from '../../application/controllers/user.controller';
 
 const router = Router();
 
-router.get('/all-user', authenticateJWT, userController.getAllUsers);
-router.get('/get-user/:id', authenticateJWT, userController.getUserById);
-router.patch('/update-user/:id', authenticateJWT, userController.updateUser);
-router.delete('/delete-user/:id', authenticateJWT, userController.deleteUser);
+router.get('/all-user',  authenticateJWT, authorizeRoles('admin'), userController.getAllUsers);
+router.get('/get-user/:id', authenticateJWT,authorizeRoles('admin'), userController.getUserById);
+router.patch('/update-user/:id', authenticateJWT, authorizeRoles('admin'), userController.updateUser);
+router.delete('/delete-user/:id', authenticateJWT, authorizeRoles('admin'), userController.deleteUser);
 
 export default router;

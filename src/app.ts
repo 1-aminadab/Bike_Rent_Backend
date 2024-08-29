@@ -5,8 +5,25 @@ import express, { Request, Response, NextFunction } from 'express';
 import { ApplicationError } from './domain/errors/application-error';
 import authRouter from './presentation/routes/auth.routes';
 import userRouter from './presentation/routes/user.routes';
+import cors from 'cors';
 
 export const app = express();
+
+// CORS configuration with whitelist
+const whitelist = ['http://localhost:5173'];
+const corsOptions: any = {
+  origin: (origin:any, callback:any) => {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));  
+
+app.use(cors(corsOptions));  // Use CORS with the configured options
 
 app.use(compression());
 app.use(bodyParser.json());

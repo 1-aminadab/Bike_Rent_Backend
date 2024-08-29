@@ -5,16 +5,12 @@ import { TokenManager } from '../../infrastructure/utils/token-manager';
 import { userService } from './user.service';
 import { logger } from '../../logger';
 
-interface SuccessResponse {
+interface OtpResponse {
   success: boolean;
   message?: string;
   token?: string;
 }
 
-interface ErrorResponse {
-  success: boolean;
-  message: string;
-}
 
 export class PasswordResetService {
   private generateOtp(): number {
@@ -23,7 +19,9 @@ export class PasswordResetService {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  async sendOtp(phoneNumber: string): Promise<SuccessResponse | ErrorResponse> {
+  async sendOtp(phoneNumber: string): Promise<OtpResponse > {
+console.log('user otp....')
+
     try {
       const user = await authService.findUser(phoneNumber);
       if (!user) {
@@ -32,6 +30,8 @@ export class PasswordResetService {
       }
 
       const otp = this.generateOtp().toString();
+      console.log('generated otp', otp);
+      
       const otpSent = await this.sendOtpViaSms(phoneNumber, otp);
 
       if (!otpSent) {
@@ -46,7 +46,7 @@ export class PasswordResetService {
     }
   }
 
-  async verifyOtp(token: string, receivedOtp: string): Promise<SuccessResponse | ErrorResponse> {
+  async verifyOtp(token: string, receivedOtp: string): Promise<OtpResponse> {
     try {
       const decodedToken = TokenManager.verifyAccessToken(token);
       const { otp, phoneNumber } = decodedToken;
@@ -64,7 +64,7 @@ export class PasswordResetService {
     }
   }
 
-  async changePassword(token: string, newPassword: string): Promise<SuccessResponse | ErrorResponse> {
+  async changePassword(token: string, newPassword: string): Promise<OtpResponse> {
     try {
       const decodedToken = TokenManager.verifyAccessToken(token);
       const { phoneNumber } = decodedToken;
@@ -101,3 +101,4 @@ export class PasswordResetService {
     }
   }
 }
+

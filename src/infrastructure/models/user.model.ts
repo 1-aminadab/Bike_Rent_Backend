@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { UserRole } from '../../domain/enums/user.enum';
 import { IUser } from '../../domain/interface/user.interface';
+import { add } from 'winston';
 
 const UserSchema: Schema = new Schema({
   firstName: { type: String, required: true },
@@ -11,7 +12,11 @@ const UserSchema: Schema = new Schema({
   refreshToken: { type: String, required: false },
   password: { type: String, required: true },
   verified: { type: Boolean, default: false },
-  role: { type: String, enum: Object.values(UserRole), default: UserRole.User }
+  status:{type:Boolean, default: true},
+  address: { type: String, required: true },
+  age: { type: Number, required: true },
+  gender : { type: String, required: true },
+  role: { type: String, enum: Object.values(UserRole) }
 }, {
   timestamps: true
 });

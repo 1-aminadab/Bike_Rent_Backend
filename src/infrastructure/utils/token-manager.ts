@@ -11,7 +11,7 @@ export class TokenManager {
     }
 
     static generateRefreshToken(user: IUser): string {
-      return jwt.sign({ userId: user.id, role: user.role }, this.accessTokenSecret, { expiresIn: '15m' });
+      return jwt.sign({ userId: user.id, role: user.role }, this.accessTokenSecret, { expiresIn: '5d' });
     }
 
     static verifyAccessToken(token: string): any {

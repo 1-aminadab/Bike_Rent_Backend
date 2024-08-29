@@ -5,6 +5,7 @@ import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 
 class AuthController {
   async register(req: Request, res: Response) {
+    console.log(req.body,'in controler....');
     try {
       const user = await authService.register(req.body);
       return res.status(201).json(user);

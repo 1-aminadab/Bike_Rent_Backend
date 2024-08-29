@@ -12,6 +12,10 @@ export interface IUser extends Document {
     verified: boolean;
     role: UserRole;
     refreshToken: string;
+    address: string;
+    age: number;
+    gender: string;
+
 }
 
 export interface IUserService {

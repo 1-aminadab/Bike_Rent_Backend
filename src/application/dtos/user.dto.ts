@@ -26,15 +26,27 @@ export class UserDto {
 
     @IsEmail()
     @IsOptional()
-    email: string;
+    email?: string;
 
     @IsNotEmpty()
     @MinLength(6)
     password: string;
 
+    @IsNotEmpty()
+    @IsString()
+    address: string;
+
+    @IsNotEmpty()
+    age: number;
+
+    @IsNotEmpty()
+    gender: string;
+
     @IsEnum(UserRole)
-    role: UserRole;
+    @IsOptional()
+    role?: UserRole;
 }
+
 
 export class LoginDto {
     @IsNotEmpty()
