@@ -104,8 +104,10 @@ console.log('user registered....')
   }
 
   private setCookies(res: Response, accessToken: string, refreshToken: string): void {
-    res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+    console.log('setting cookie');
+    
+    res.cookie('accessToken', accessToken, { httpOnly: true, secure: false});
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false});
   }
 
   private clearCookies(res: Response): void {

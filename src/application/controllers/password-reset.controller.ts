@@ -63,6 +63,24 @@ class PasswordResetController {
       return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
     }
   }
+  async changePasswordByAdmin(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
+    try {
+
+      // const authHeader = req.headers['authorization'];
+      // const token = authHeader && authHeader.split(' ')[1];
+      // const {phoneNumber } = req.params;
+      const { newPassword,phoneNumber } = req.body;
+      if ( !newPassword) {
+        return res.status(400).json({ errors: [{ msg: 'Token and new password are required' }] });
+      }
+
+      const result = await passwordResetService.changePasswordByAdmin(phoneNumber, newPassword);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      logger.error('Error in changePassword controller', { error });
+      return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
+    }
+  }
 }
 
 export const passwordResetController = new PasswordResetController();

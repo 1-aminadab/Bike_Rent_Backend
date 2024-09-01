@@ -6,8 +6,10 @@ import { ApplicationError } from './domain/errors/application-error';
 import authRouter from './presentation/routes/auth.routes';
 import userRouter from './presentation/routes/user.routes';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 export const app = express();
+app.use(cookieParser());
 
 // CORS configuration with whitelist
 const whitelist = ['http://localhost:5173'];
@@ -21,9 +23,11 @@ const corsOptions: any = {
   }
 };
 
-app.use(cors(corsOptions));  
-
-app.use(cors(corsOptions));  // Use CORS with the configured options
+// app.use(cors(corsOptions));  
+app.use(cors({
+  origin: corsOptions, // Frontend URL
+  credentials: true, // Allows credentials (cookies, authorization headers, etc.)
+}));
 
 app.use(compression());
 app.use(bodyParser.json());

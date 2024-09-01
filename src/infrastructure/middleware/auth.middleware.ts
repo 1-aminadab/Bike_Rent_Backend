@@ -5,8 +5,10 @@ import { TokenManager } from '../utils/token-manager';
 
 export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   // const token = req.cookies.accessToken;
-  console.log(req.headers,'.........,')
+  console.log(req?.cookies?.accessToken,'in auth middle ware.........,')
   const token =  req?.cookies?.accessToken || req.headers['authorization'];
+  console.log(token,'token.........auth,');
+  
 
   if (!token) {
     return res.status(401).json({ message: 'Access Denied' });
