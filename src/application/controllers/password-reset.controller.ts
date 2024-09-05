@@ -30,16 +30,36 @@ class PasswordResetController {
     }
   }
 
+  async verifyRegistrationOtp(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
+    try {
+      // const authHeader = req.headers['authorization'];
+      // const token = authHeader && authHeader.split(' ')[1];
+      const {phoneNumber,verificationId}= req.body
+      const { receivedOtp } = req.params;
+      console.log(phoneNumber,verificationId,receivedOtp)
+      // if (!token || !receivedOtp) {
+      //   return res.status(400).json({ errors: [{ msg: 'Token and OTP are required' }] });
+      // }
+
+      const result = await passwordResetService.verifyRegistrationOtp(verificationId, receivedOtp,phoneNumber);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      logger.error('Error in verifyOtp controller', { error });
+      return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
+    }
+  }
   async verifyOtp(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
     try {
-      const authHeader = req.headers['authorization'];
-      const token = authHeader && authHeader.split(' ')[1];
+      // const authHeader = req.headers['authorization'];
+      // const token = authHeader && authHeader.split(' ')[1];
+      const {phoneNumber,verificationId}= req.body
       const { receivedOtp } = req.params;
-      if (!token || !receivedOtp) {
-        return res.status(400).json({ errors: [{ msg: 'Token and OTP are required' }] });
-      }
+      console.log(phoneNumber,verificationId,receivedOtp)
+      // if (!token || !receivedOtp) {
+      //   return res.status(400).json({ errors: [{ msg: 'Token and OTP are required' }] });
+      // }
 
-      const result = await passwordResetService.verifyOtp(token, receivedOtp);
+      const result = await passwordResetService.verifyOtp(verificationId, receivedOtp,phoneNumber);
       return res.status(200).json({ data: result });
     } catch (error) {
       logger.error('Error in verifyOtp controller', { error });
@@ -50,8 +70,10 @@ class PasswordResetController {
   async changePassword(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
     try {
       const authHeader = req.headers['authorization'];
+      console.log(authHeader,'auth h')
       const token = authHeader && authHeader.split(' ')[1];
-      const { newPassword } = req.params;
+      console.log(token,'toke')
+      const { newPassword } = req.body;
       if (!token || !newPassword) {
         return res.status(400).json({ errors: [{ msg: 'Token and new password are required' }] });
       }
@@ -63,6 +85,7 @@ class PasswordResetController {
       return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
     }
   }
+
   async changePasswordByAdmin(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
     try {
 
@@ -71,7 +94,7 @@ class PasswordResetController {
       // const {phoneNumber } = req.params;
       const { newPassword,phoneNumber } = req.body;
       if ( !newPassword) {
-        return res.status(400).json({ errors: [{ msg: 'Token and new password are required' }] });
+        return res.status(400).json({ errors: [{ msg: ' new password are required' }] });
       }
 
       const result = await passwordResetService.changePasswordByAdmin(phoneNumber, newPassword);
@@ -81,6 +104,26 @@ class PasswordResetController {
       return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
     }
   }
+
+  async forgetPassword(req:Request, res:Response):Promise<any>{
+    try {
+      const {phoneNumber}= req.body;
+      console.log(phoneNumber);
+      
+      if(!phoneNumber){
+        return res.status(400).json({ errors: [{ msg: 'phone number is required' }] });
+      }
+     const result = await passwordResetService.forgetPassword(phoneNumber)
+      return res.status(200).json({data:result})
+      
+    } catch (error) {
+      logger.error('Error in forget password controller', { error });
+      return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
+
+    }
+
+  }
+
 }
 
 export const passwordResetController = new PasswordResetController();

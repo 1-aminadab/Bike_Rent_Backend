@@ -31,7 +31,8 @@ class UserService {
 
   async deleteUser(userId: string): Promise<IUser | null> {
     try {
-      return await UserModel.findByIdAndDelete(userId).exec();
+    return await UserModel.findOneAndDelete({ _id: userId, role: UserRole.User }).exec();
+      // return await UserModel.findByIdAndDelete(userId).exec();
     } catch (error) {
       logger.error('Error deleting user', { error });
       throw new Error('Error deleting user');

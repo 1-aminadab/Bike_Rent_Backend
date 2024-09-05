@@ -13,8 +13,10 @@ router.post('/refresh-tokens', authController.refreshTokens);
 
 // password reset controller
 router.post('/send-otp/:phoneNumber', passwordResetController.sendOtp);
-router.post('/verify-otp/:receivedOtp', passwordResetController.sendOtp);
-router.post('/change-password/:newPassword', passwordResetController.sendOtp);
+router.post('/verify-otp/:receivedOtp', passwordResetController.verifyOtp);
+router.post('/verify-registration-otp/:receivedOtp', passwordResetController.verifyRegistrationOtp);
+router.post('/change-password', passwordResetController.changePassword);
+router.post('/forget-password', passwordResetController.forgetPassword);
 
 // Example of role-based route
 router.get('/admin', authenticateJWT, authorizeRoles('admin', 'super-admin'), (req, res) => {
