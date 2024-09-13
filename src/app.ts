@@ -7,6 +7,7 @@ import authRouter from './presentation/routes/auth.routes';
 import userRouter from './presentation/routes/user.routes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import bikeRouter from './presentation/routes/bike.routes';
 
 export const app = express();
 app.use(cookieParser());
@@ -39,7 +40,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
-
+app.use('/api/bike',bikeRouter)
 app.use((err: ApplicationError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
