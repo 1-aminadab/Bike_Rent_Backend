@@ -3,9 +3,6 @@ import compression from 'compression';
 import path from 'path';
 import express, { Request, Response, NextFunction } from 'express';
 import { ApplicationError } from './domain/errors/application-error';
-import authRouter from './presentation/routes/auth.routes';
-import userRouter from './presentation/routes/user.routes';
-import cors from 'cors';
 
 export const app = express();
 
@@ -21,10 +18,6 @@ const corsOptions: any = {
   }
 };
 
-app.use(cors(corsOptions));  
-
-app.use(cors(corsOptions));  // Use CORS with the configured options
-
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,8 +26,6 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
-app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
 
 app.use((err: ApplicationError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {

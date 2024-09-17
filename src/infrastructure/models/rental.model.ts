@@ -18,7 +18,7 @@ const RentalSchema: Schema = new Schema({
   bike_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bike', required: true },
   start_time: { type: Date, required: true },
   end_time: { type: Date },
-  status: { type: String, enum: ['ongoing', 'completed', 'canceled'], required: true },
+  status: { type: String, enum: ['waiting', 'ongoing', 'completed', 'canceled'], required: true },
   start_place_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Place', required: true },
   end_place_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Place' },
   route_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
