@@ -14,7 +14,7 @@ interface IBike extends Document {
 
 const BikeSchema: Schema = new Schema({
   bikeId: { type: String, required: true, unique: true },
-  Type:{type:String,required:false,default:"manual"},
+  type:{type:String,required:false,default:"manual"},
   qrCode: { type: String, required: true,unique:true },
   status: { type: Boolean, required: true, default: true },
   inUse: { type: Boolean, required: true, default: false },

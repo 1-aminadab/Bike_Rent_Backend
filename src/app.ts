@@ -14,22 +14,15 @@ export const app = express();
 app.use(cookieParser());
 
 // CORS configuration with whitelist
-const whitelist = ['http://localhost:5173'];
 const corsOptions: any = {
-  origin: (origin:any, callback:any) => {
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
+  origin: (origin: any, callback: any) => {
+    // Allow requests from any origin
+    callback(null, true);
+  },
+  credentials: true, // Allows credentials (cookies, authorization headers, etc.)
 };
 
-// app.use(cors(corsOptions));  
-app.use(cors({
-  origin: corsOptions, // Frontend URL
-  credentials: true, // Allows credentials (cookies, authorization headers, etc.)
-}));
+app.use(cors(corsOptions)); 
 
 app.use(compression());
 app.use(bodyParser.json());
