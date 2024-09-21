@@ -7,16 +7,16 @@ import { ApplicationError } from './domain/errors/application-error';
 export const app = express();
 
 // CORS configuration with whitelist
-const whitelist = ['http://localhost:5173'];
-const corsOptions: any = {
-  origin: (origin:any, callback:any) => {
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-};
+// const whitelist = ['http://localhost:5173'];
+// const corsOptions: any = {
+//   origin: (origin:any, callback:any) => {
+//     if (!origin || whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   }
+// };
 
 app.use(compression());
 app.use(bodyParser.json());

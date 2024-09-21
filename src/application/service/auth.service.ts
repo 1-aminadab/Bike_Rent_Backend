@@ -47,7 +47,7 @@ class AuthService implements IUserService {
     });
     await newUser.save();
 // send otp
-console.log('user registered....')
+    console.log('user registered....')
     const otpResponse = await otpService.sendOtp(newUser.phoneNumber);
     if (!otpResponse.success) {
       throw new Error(otpResponse.message);
@@ -75,7 +75,9 @@ console.log('user registered....')
     this.setCookies(res, accessToken, refreshToken);
     return {
       message: 'loged in successfully',
-      data:userData
+      data:userData,
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
   }
 
