@@ -15,7 +15,8 @@ export interface IUser extends Document {
     address: string;
     age: number;
     gender: string;
-
+    status:boolean | string;
+    email:string;
 }
 
 export interface IUserService {
