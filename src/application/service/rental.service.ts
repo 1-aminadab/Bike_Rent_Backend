@@ -1,7 +1,4 @@
 import RentalModel , { IRental } from './../../infrastructure/models/rental.model';
-// rental.service.ts
-
-import mongoose from 'mongoose';
 import { logger } from '../../logger';
 
 export class RentalService {

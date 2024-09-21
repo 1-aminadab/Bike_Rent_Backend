@@ -25,7 +25,7 @@ export interface IHistory extends Document {
   };
   bike_status_at_end: {
     battery_level: number;
-    bike_condition: 'good' | 'needs_service' | 'damaged';
+    bike_condiroutertion: 'good' | 'needs_service' | 'damaged';
     last_serviced: Date;
   };
   created_at: Date;
@@ -61,5 +61,5 @@ const HistorySchema: Schema = new Schema({
   created_at: { type: Date, default: Date.now },
 });
 
-export const userModel =  mongoose.model<IHistory>('History', HistorySchema);
+export const historyModel =  mongoose.model<IHistory>('History', HistorySchema);
 
