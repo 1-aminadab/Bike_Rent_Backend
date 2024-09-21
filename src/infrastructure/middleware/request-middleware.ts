@@ -30,7 +30,7 @@ interface HandlerOptions {
  * @param handler Request handler to check for error
  */
 export const relogRequestHandler = (
-  handler: RequestHandler,
+  handler: any,
   options?: HandlerOptions,
 ): RequestHandler => async (req: Request, res: Response, next: NextFunction) => {
   logger.log({

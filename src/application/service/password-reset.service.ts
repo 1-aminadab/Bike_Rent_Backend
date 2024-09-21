@@ -190,7 +190,7 @@ export class PasswordResetService {
 
     try {
       // Make the request to Afromessage API
-      const response = await axios.get(url, {
+      const response:any = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -9,7 +9,7 @@ class PaymentController {
       const { userId, amount } = req.body;
 
       // Call the service to initialize payment
-      const paymentResponse = await paymentService.initializePayment(userId, amount);
+      const paymentResponse:any = await paymentService.initializePayment(userId, amount);
 
       // Redirect the user to the checkout URL provided by Chapa
       res.redirect(paymentResponse.data.checkout_url);
@@ -24,7 +24,7 @@ class PaymentController {
       const { tx_ref } = req.params;
 
       // Call the service to verify the transaction
-      const verificationResponse = await paymentService.verifyPayment(tx_ref);
+      const verificationResponse:any = await paymentService.verifyPayment(tx_ref);
 
       // Update the transaction status based on the verification response
       if (verificationResponse.data.status === 'success') {

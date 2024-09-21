@@ -53,7 +53,7 @@ class UserController {
       
       // Remove password and refreshToken fields from each user object
       const sanitizedUsers = users.map(user => {
-        const { password, refreshToken, ...userWithoutSensitiveInfo } = user.toObject();
+        const { password, refreshToken, ...userWithoutSensitiveInfo } = user;
         return userWithoutSensitiveInfo;
       });
   

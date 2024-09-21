@@ -39,7 +39,7 @@ class UserService {
     }
   }
 
-  async getAllUsers(): Promise<IUser[]> {
+async getAllUsers(): Promise<IUser[]> {
     try {
       return await UserModel.find({ role: UserRole.User}).exec();
     } catch (error) {

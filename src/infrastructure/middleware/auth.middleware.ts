@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 import { TokenManager } from '../utils/token-manager';
 

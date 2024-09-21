@@ -47,7 +47,8 @@ if (process.env.MONGO_URL == null) {
     io = initializeSocket.initializeSocket(server, corsOptions);
     app.listen(app.get('port'), (): void => {
       console.log('\x1b[36m%s\x1b[0m', // eslint-disable-line
-        `🌏 Express server started at http://localhost:${app.get('port')}   `);
+        `🌏 Express server started at http://localhost:${app.get('port')}`
+      );
     });
   });
 }
@@ -55,14 +56,5 @@ if (process.env.MONGO_URL == null) {
 // Close the Mongoose connection, when receiving SIGINT
 process.on('SIGINT', () => {
   logger.info('Gracefully shutting down');
-  mongoConnection.close(err => {
-    if (err) {
-      logger.log({
-        level: 'error',
-        message: 'Error shutting closing mongo connection',
-        error: err
-      });
-    }
-    process.exit(0);
-  });
+  mongoConnection.close(true);
 });
