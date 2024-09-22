@@ -1,44 +1,55 @@
-// application/controllers/auth.controller.ts
 import { Request, Response } from 'express';
 import { authService } from '../service/auth.service';
 import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
+import { logger } from '../../logger';
 
 class AuthController {
   async register(req: Request, res: Response) {
-    console.log(req.body,'in controler....');
+    logger.info('Register request received', { body: req.body });
     try {
       const user = await authService.register(req.body);
-      return res.status(201).json(user);
+      logger.info('User registered successfully');
+      res.status(200).json(user);
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      logger.error(`Register failed: ${error.message}`);
+      res.status(error.status || 500).json({ message: error.message });
     }
-  };
+  }
 
   async login(req: Request, res: Response) {
+    logger.info('Login request received', { body: req.body });
     try {
-      const {data,message} = await authService.login(req.body, res);
-      return res.status(200).json({data, message });
+      const { data, message } = await authService.login(req.body);
+      logger.info('User logged in successfully');
+      res.status(200).json({ data, message });
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      logger.error(`Login failed: ${error.message}`);
+      res.status(error.status || 500).json({ message: error.message });
     }
-  };
+  }
 
   async logout(req: AuthenticatedRequest, res: Response) {
+    logger.info('Logout request received', { userId: req.user._id });
     try {
       const userId = req.user._id;
-      await authService.logout(userId, res);
-      return res.status(200).json({ message: 'Logout successful' });
+      await authService.logout(userId);
+      logger.info('User logged out successfully', { userId });
+      res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      logger.error(`Logout failed: ${error.message}`);
+      res.status(error.status || 500).json({ message: error.message });
     }
-  };
+  }
 
   async refreshTokens(req: Request, res: Response) {
+    logger.info('Refresh tokens request received');
     try {
-      await authService.refreshToken(req, res);
-      return res.status(200).json({ message: 'Tokens refreshed' });
+      const result = await authService.refreshToken(req);
+      logger.info('Tokens refreshed successfully');
+      res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      logger.error(`Token refresh failed: ${error.message}`);
+      res.status(error.status || 500).json({ message: error.message });
     }
   }
 }

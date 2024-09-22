@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import UserModel from "../../infrastructure/models/user.model";
-import { IUser, IUserService } from "../../domain/interface/user.interface";
+import { IUser } from "../../domain/interface/user.interface";
 import { LoginDto, UserDto } from "../dtos/user.dto";
 import { TokenManager } from "../../infrastructure/utils/token-manager";
 import { logger } from "../../logger";
@@ -11,163 +10,186 @@ import {
   validatePhoneNumber,
 } from "../../infrastructure/utils/validator";
 import { PasswordResetService } from "./password-reset.service";
+import { Request } from "express";
 
 const otpService = new PasswordResetService();
 
-class AuthService implements IUserService {
+class AuthService {
   private temporaryUserStore: Map<string, any> = new Map();
 
   private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
+    logger.info(`Password hashed successfully`);
+    return hashed;
   }
 
-  private async comparePassword(
-    password: string,
-    hash: string
-  ): Promise<boolean> {
-    return bcrypt.compare(password, hash);
+  private async comparePassword(password: string, hash: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(password, hash);
+    logger.debug(`Password comparison result: ${isMatch}`);
+    return isMatch;
   }
 
   public async findUser(phoneNumber: string): Promise<IUser | null> {
-    return UserModel.findOne({ phoneNumber });
+    const user = await UserModel.findOne({ phoneNumber });
+    logger.info(`User lookup for phone number ${phoneNumber}: ${user ? "Found" : "Not Found"}`);
+    return user;
   }
 
   public async register(userDto: UserDto): Promise<any> {
-    if (userDto.email && !validateEmail(userDto.email)) {
-      throw new Error("Invalid email format!");
-    }
-    if (!validatePhoneNumber(userDto.phoneNumber)) {
-      throw new Error("Invalid phone number format");
-    }
-    if (!validatePassword(userDto.password)) {
-      throw new Error("Password does not meet security requirements");
-    }
-  
-    const existingUser = await this.findUser(userDto.phoneNumber);
-    if (existingUser) throw new Error("User already exists");
-  
-    const hashedPassword = await this.hashPassword(userDto.password);
-  
-    // Send OTP
-    const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
-    console.log(otpResponse);
-    
-    if (!otpResponse) {
-      throw new Error(otpResponse.message);
-    }
-  
-    // Store user data temporarily
-    // const verificationId = otpResponse.verificationId;
-    const verificationId = otpResponse;  // Token to validate OTP
-    this.temporaryUserStore.set(verificationId, {
-      ...userDto,
-      password: hashedPassword,
-    });
+    try {
+      logger.info('Registering new user', { email: userDto.email, phoneNumber: userDto.phoneNumber });
 
-    // Store user data in temporary storage or a session
-    return {
-      success: true,
-      message: "OTP sent. Please verify to complete registration.",
-      verificationId: verificationId,
-      // userDetails: {
-      //   ...userDto,
-      //   password: hashedPassword,
-      // },
-    };
+      if (userDto.email && !validateEmail(userDto.email)) {
+        throw { status: 400, message: "Invalid email format!" };
+      }
+      if (!validatePhoneNumber(userDto.phoneNumber)) {
+        throw { status: 400, message: "Invalid phone number format" };
+      }
+      if (!validatePassword(userDto.password)) {
+        throw { status: 400, message: "Password does not meet security requirements" };
+      }
+
+      const existingUser = await this.findUser(userDto.phoneNumber);
+      if (existingUser) {
+        throw { status: 409, message: "User already exists" };
+      }
+
+      const hashedPassword = await this.hashPassword(userDto.password);
+      const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
+
+      if (!otpResponse) {
+        throw { status: 500, message: "Failed to send OTP" };
+      }
+
+      const verificationId = otpResponse;
+      this.temporaryUserStore.set(verificationId, { ...userDto, password: hashedPassword });
+
+      logger.info(`OTP sent to ${userDto.phoneNumber}`);
+
+      return {
+        success: true,
+        message: "OTP sent. Please verify to complete registration.",
+        verificationId: verificationId,
+      };
+    } catch (error) {
+      logger.error(`Register service error: ${error.message}`);
+      throw error;
+    }
   }
 
   public async completeRegistration(verificationId: string): Promise<any> {
-    const userDetails = this.temporaryUserStore.get(verificationId);
-    if (!userDetails) {
-      throw new Error("Invalid or expired verification ID");
+    try {
+      const userDetails = this.temporaryUserStore.get(verificationId);
+      if (!userDetails) {
+        throw { status: 400, message: "Invalid or expired verification ID" };
+      }
+
+      const user = new UserModel(userDetails);
+      await user.save();
+      this.temporaryUserStore.delete(verificationId);
+
+      logger.info(`User ${user._id} registered successfully`);
+
+      return {
+        success: true,
+        message: "Registration completed successfully",
+        data: user,
+      };
+    } catch (error) {
+      logger.error(`Complete registration error: ${error.message}`);
+      throw error;
     }
-
-    const user = new UserModel(userDetails);
-    await user.save();
-
-    // Remove the temporary data after successful registration
-    this.temporaryUserStore.delete(verificationId);
-
-    return {
-      success: true,
-      message: "Registration completed successfully",
-      data: user,
-    };
   }
 
-  public async login(credentials: LoginDto, res: Response): Promise<any> {
-    const user = await UserModel.findOne({
-      phoneNumber: credentials.phoneNumber,
-    });
-    if (!user) throw new Error("Invalid credentials");
-    if (!user.status) throw new Error("your account is inactive");
-    const isPasswordValid = await this.comparePassword(
-      credentials.password,
-      user.password
-    );
-    if (!isPasswordValid) throw new Error("Invalid credentials");
+  public async login(credentials: LoginDto): Promise<any> {
+    try {
+      logger.info('Login attempt', { phoneNumber: credentials.phoneNumber });
 
-    const accessToken = TokenManager.generateAccessToken(user);
-    const refreshToken = TokenManager.generateRefreshToken(user);
-    user.refreshToken = refreshToken;
-    await user.save();
+      const user = await UserModel.findOne({ phoneNumber: credentials.phoneNumber });
+      if (!user) {
+        throw { status: 401, message: "Invalid credentials" };
+      }
+      if (!user.status) {
+        throw { status: 403, message: "Your account is inactive" };
+      }
 
-    const { password, refreshToken: _, ...userData } = user.toObject();
-    this.setCookies(res, accessToken, refreshToken);
-    return {
-      message: "loged in successfully",
-      data: userData,
-    };
+      const isPasswordValid = await this.comparePassword(credentials.password, user.password);
+      if (!isPasswordValid) {
+        throw { status: 401, message: "Invalid credentials" };
+      }
+
+      const accessToken = TokenManager.generateAccessToken(user);
+      const refreshToken = TokenManager.generateRefreshToken(user);
+      user.refreshToken = refreshToken;
+      await user.save();
+
+      const { password, refreshToken: _, ...userData } = user.toObject();
+
+      logger.info(`User ${user._id} logged in successfully`);
+
+      return {
+        message: "Logged in successfully",
+        data: userData,
+        accessToken,
+        refreshToken
+      };
+    } catch (error) {
+      logger.error(`Login service error: ${error.message}`);
+      throw error;
+    }
   }
 
-  public async logout(userId: string, res: Response): Promise<void> {
-    await UserModel.updateOne({ _id: userId }, { refreshToken: null });
-    this.clearCookies(res);
+  public async logout(userId: string): Promise<void> {
+    try {
+      logger.info(`Logging out user ${userId}`);
+      await UserModel.updateOne({ _id: userId }, { refreshToken: null });
+      logger.info(`User ${userId} logged out successfully`);
+    } catch (error) {
+      logger.error(`Logout service error: ${error.message}`);
+      throw error;
+    }
   }
 
-  public async refreshToken(req: Request, res: Response): Promise<void> {
-    const { refreshToken } = req.cookies;
-    if (!refreshToken) throw new Error("No refresh token provided");
+  public async refreshToken(req: Request): Promise<any> {
+    console.log('====================================');
+    console.log(req.headers);
+    console.log('====================================');
+    try {
+      const { refreshToken } = req.cookies;
+      logger.info('Refreshing tokens', { refreshToken });
 
-    const user = await UserModel.findOne({ refreshToken });
-    if (!user) throw new Error("Invalid refresh token");
+      if (!refreshToken) {
+        throw { status: 401, message: "No refresh token provided" };
+      }
 
-    const validToken = TokenManager.verifyRefreshToken(refreshToken);
-    if (!validToken) throw new Error("Invalid refresh token");
+      const user = await UserModel.findOne({ refreshToken });
+      if (!user) {
+        throw { status: 401, message: "Invalid refresh token" };
+      }
 
-    const newAccessToken = TokenManager.generateAccessToken(user);
-    const newRefreshToken = TokenManager.generateRefreshToken(user);
+      const validToken = TokenManager.verifyRefreshToken(refreshToken);
+      if (!validToken) {
+        throw { status: 401, message: "Invalid refresh token" };
+      }
 
-    user.refreshToken = newRefreshToken;
-    await user.save();
+      const newAccessToken = TokenManager.generateAccessToken(user);
+      const newRefreshToken = TokenManager.generateRefreshToken(user);
 
-    this.setCookies(res, newAccessToken, newRefreshToken);
-  }
+      user.refreshToken = newRefreshToken;
+      await user.save();
 
-  private setCookies(
-    res: Response,
-    accessToken: string,
-    refreshToken: string
-  ): void {
-    console.log("setting cookie");
+      logger.info(`Tokens refreshed for user ${user._id}`);
 
-    res.cookie("accessToken", accessToken, { httpOnly: true, secure: false });
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: false });
-  }
-
-  private clearCookies(res: Response): void {
-    res.cookie("accessToken", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      expires: new Date(0),
-    });
-    res.cookie("refreshToken", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      expires: new Date(0),
-    });
+      return {
+        message: "Tokens refreshed successfully",
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        role:user.role
+      };
+    } catch (error) {
+      logger.error(`Refresh token service error: ${error.message}`);
+      throw error;
+    }
   }
 }
 
