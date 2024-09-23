@@ -4,6 +4,7 @@ import { authService } from "./auth.service";
 import { TokenManager } from "../../infrastructure/utils/token-manager";
 import { userService } from "./user.service";
 import { logger } from "../../logger";
+require('dotenv').config();
 
 interface OtpResponse {
   success: boolean;
@@ -121,30 +122,41 @@ export class PasswordResetService {
 
   async changePassword(
     token: string,
+    currentPassword: string, // Add currentPassword parameter
     newPassword: string
   ): Promise<OtpResponse> {
     try {
+      // Verify token and extract phone number
       const decodedToken = TokenManager.verifyAccessToken(token);
-      console.log(decodedToken.data);
-      
       const { phoneNumber } = decodedToken.data;
-
+  
+      // Find the user by phone number
       const user = await authService.findUser(phoneNumber);
-      console.log(user,'in change pass service ............')
       if (!user) {
         logger.warn(`User with phone number ${phoneNumber} not found`);
         return { success: false, message: "User not found" };
       }
-
+  
+      // Compare the previous password with the stored password
+      const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordCorrect) {
+        logger.warn(`Incorrect previous password for user with phone number ${phoneNumber}`);
+        return { success: false, message: "Incorrect previous password" };
+      }
+  
+      // Hash the new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      // Update the user's password in the database
       await userService.updateUser(user._id, { password: hashedPassword });
-
+  
       return { success: true, message: "Password changed successfully" };
     } catch (error) {
       logger.error("Error changing password", { error });
       return { success: false, message: "Error changing password" };
     }
   }
+  
   async changePasswordByAdmin(
     phoneNumber: string,
     newPassword: string
@@ -171,10 +183,10 @@ export class PasswordResetService {
 
   private async sendOtpViaSms(phoneNumber: string): Promise<any> {
     // Configure the Afromessage API parameters
-    const base_url = "https://api.afromessage.com/api/challenge";
-    const token =
-      "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs	"; // Replace with your actual token
-    const identifier = "e80ad9d8-adf3-463f-80f4-7c4b39f7f164"; // Replace with your actual identifier
+    const base_url = process.env.AFRO_API_KEY;
+    const token = process.env.AFRO_TOKEN
+      // "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs	"; // Replace with your actual token
+    const identifier = process.env.AFRO_IDENTIFIER; // Replace with your actual identifier
     const sender = ""; // Replace with your actual sender name
     const callback = ""; // Optional: Replace with your actual callback URL
     const messagePrefix = "addis bike verification code is: "; // Optional: Customize the message prefix

@@ -1,7 +1,6 @@
 // models/TransactionModel.ts
 import { Schema, model, Document } from 'mongoose';
 
-// Define the interface for TypeScript
 interface Transaction extends Document {
   user_id: string;
   tx_ref: string;
@@ -11,9 +10,9 @@ interface Transaction extends Document {
   first_name: string;
   last_name: string;
   phone_number: string;
+  payment_method: string; // Added field for payment method
 }
 
-// Define the schema
 const TransactionSchema = new Schema<Transaction>(
   {
     user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -24,9 +23,9 @@ const TransactionSchema = new Schema<Transaction>(
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     phone_number: { type: String, required: true },
+    payment_method: { type: String, required: true,default:"electronic" }, // cash or electronic
   },
   { timestamps: true }
 );
 
-// Create and export the model
 export const TransactionModel = model<Transaction>('Transaction', TransactionSchema);

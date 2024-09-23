@@ -73,12 +73,12 @@ class PasswordResetController {
       console.log(authHeader,'auth h')
       const token = authHeader && authHeader.split(' ')[1];
       console.log(token,'toke')
-      const { newPassword } = req.body;
+      const { newPassword , currentPassword} = req.body;
       if (!token || !newPassword) {
         return res.status(400).json({ errors: [{ msg: 'Token and new password are required' }] });
       }
 
-      const result = await passwordResetService.changePassword(token, newPassword);
+      const result = await passwordResetService.changePassword(token,currentPassword, newPassword);
       return res.status(200).json({ data: result });
     } catch (error) {
       logger.error('Error in changePassword controller', { error });

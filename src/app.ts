@@ -5,6 +5,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { ApplicationError } from './domain/errors/application-error';
 import authRouter from './presentation/routes/auth.routes';
 import userRouter from './presentation/routes/user.routes';
+import routeRouter from './presentation/routes/route.routes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import bikeRouter from './presentation/routes/bike.routes';
@@ -36,6 +37,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/bike',bikeRouter);
 app.use('/api/payment', PaymentRouter);
+app.use('/api/route', routeRouter);
 
 app.use((err: ApplicationError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {

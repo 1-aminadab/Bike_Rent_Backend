@@ -19,4 +19,7 @@ router.delete('/delete-user/:id',  userController.deleteUser);
 router.delete('/delete-sub-admin/:id',  userController.deleteSubAdmin);
 router.delete('/delete-admin/:id',  userController.deleteAdmin);
 
+router.get('/customers/status', userController.getCustomerStats);
+router.get('/customers/:timeFrame', userController.getCustomersByTimeFrame);
+
 export default router;
