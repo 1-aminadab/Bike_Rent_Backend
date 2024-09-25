@@ -10,7 +10,7 @@ import {
   validatePhoneNumber,
 } from "../../infrastructure/utils/validator";
 import { PasswordResetService } from "./password-reset.service";
-import { Request } from "express";
+import { Request, Response } from "express";
 
 const otpService = new PasswordResetService();
 
@@ -55,21 +55,25 @@ class AuthService {
       }
 
       const hashedPassword = await this.hashPassword(userDto.password);
-      const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
 
-      if (!otpResponse) {
-        throw { status: 500, message: "Failed to send OTP" };
-      }
+      const user = new UserModel({ ...userDto, password: hashedPassword });
+      await user.save();
 
-      const verificationId = otpResponse;
-      this.temporaryUserStore.set(verificationId, { ...userDto, password: hashedPassword });
+      // const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
 
-      logger.info(`OTP sent to ${userDto.phoneNumber}`);
+      // if (!otpResponse) {
+      //   throw { status: 500, message: "Failed to send OTP" };
+      // }
+
+      // const verificationId = otpResponse;
+      // this.temporaryUserStore.set(verificationId, { ...userDto, password: hashedPassword });
+
+      // logger.info(`OTP sent to ${userDto.phoneNumber}`);
 
       return {
         success: true,
         message: "OTP sent. Please verify to complete registration.",
-        verificationId: verificationId,
+        verificationId: userDto,
       };
     } catch (error) {
       logger.error(`Register service error: ${error.message}`);
@@ -100,8 +104,7 @@ class AuthService {
       throw error;
     }
   }
-
-  public async login(credentials: LoginDto): Promise<any> {
+  public async login(credentials: LoginDto, res: Response): Promise<any> {
     try {
       logger.info('Login attempt', { phoneNumber: credentials.phoneNumber });
 
@@ -118,20 +121,35 @@ class AuthService {
         throw { status: 401, message: "Invalid credentials" };
       }
 
+      // Generate access and refresh tokens
       const accessToken = TokenManager.generateAccessToken(user);
       const refreshToken = TokenManager.generateRefreshToken(user);
+
+      // Save refresh token to the user in the database
       user.refreshToken = refreshToken;
       await user.save();
 
       const { password, refreshToken: _, ...userData } = user.toObject();
 
-      logger.info(`User ${user._id} logged in successfully`);
+      // Set HTTP-only cookies for tokens
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Only secure in production
+        sameSite: 'strict',  // Prevent CSRF
+        maxAge: 1000 * 60 * 15 // 15 minutes for access token (adjust as needed)
+      });
 
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        // sameSite: 'strict',  // Prevent CSRF
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days for refresh token (adjust as needed)
+      });
+
+      logger.info(`User ${user._id} logged in successfully`);
       return {
         message: "Logged in successfully",
         data: userData,
-        accessToken,
-        refreshToken
+        accessToken
       };
     } catch (error) {
       logger.error(`Login service error: ${error.message}`);
@@ -139,11 +157,29 @@ class AuthService {
     }
   }
 
-  public async logout(userId: string): Promise<void> {
+
+  public async logout(userId: string, res: Response): Promise<void> {
     try {
       logger.info(`Logging out user ${userId}`);
+
+      // Remove the refresh token from the user in the database
       await UserModel.updateOne({ _id: userId }, { refreshToken: null });
+
+      // Clear the access token and refresh token cookies
+      res.clearCookie('accessToken', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',  // Only secure in production
+        sameSite: 'strict'  // Prevent CSRF
+      });
+
+      res.clearCookie('refreshToken', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',  // Only secure in production
+        sameSite: 'strict'  // Prevent CSRF
+      });
+
       logger.info(`User ${userId} logged out successfully`);
+      res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
       logger.error(`Logout service error: ${error.message}`);
       throw error;
@@ -151,9 +187,6 @@ class AuthService {
   }
 
   public async refreshToken(req: Request): Promise<any> {
-    console.log('====================================');
-    console.log(req.headers);
-    console.log('====================================');
     try {
       const { refreshToken } = req.cookies;
       logger.info('Refreshing tokens', { refreshToken });
@@ -168,6 +201,7 @@ class AuthService {
       }
 
       const validToken = TokenManager.verifyRefreshToken(refreshToken);
+
       if (!validToken) {
         throw { status: 401, message: "Invalid refresh token" };
       }
@@ -184,7 +218,7 @@ class AuthService {
         message: "Tokens refreshed successfully",
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        role:user.role
+        userData: user
       };
     } catch (error) {
       logger.error(`Refresh token service error: ${error.message}`);

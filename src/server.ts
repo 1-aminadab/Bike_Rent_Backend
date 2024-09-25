@@ -28,6 +28,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
 };
+
 app.use(cors(corsOptions));
 
 app.use('/api/auth', authRouter);
@@ -57,4 +58,5 @@ if (process.env.MONGO_URL == null) {
 process.on('SIGINT', () => {
   logger.info('Gracefully shutting down');
   mongoConnection.close(true);
+  io.close();
 });
