@@ -28,6 +28,18 @@ class TrackingController {
     }
   }
 
+    // Get tracking by ID
+    async getAllTracking(req: Request, res: Response): Promise<any> {
+      try {
+       
+        const tracking = await trackingService.getAllTracking();
+        if (!tracking) return res.status(404).json({ message: 'Tracking not found' });
+        res.status(200).json(tracking);
+      } catch (error) {
+        logger.error('Error fetching tracking', { error });
+        res.status(500).json({ message: 'Error fetching tracking' });
+      }
+    }
   // Update tracking
   async updateTracking(req: Request, res: Response): Promise<any> {
     try {

@@ -7,6 +7,8 @@ router.post('/tracking', trackingController.createTracking);
 
 router.get('/tracking/:id', trackingController.getTrackingById);
 
+router.get('/tracking', trackingController.getAllTracking);
+
 // Update tracking
 router.put('/tracking/:id', trackingController.updateTracking);
 

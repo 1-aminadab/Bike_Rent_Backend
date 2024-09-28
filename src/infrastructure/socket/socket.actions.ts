@@ -5,7 +5,7 @@ import rentalModel, { IRental } from '../models/rental.model';
 import { SocketInitializer, userSockets } from './socket.init';
 import { logger } from '../../logger';
 
-export class sendRentalToSubAdmin extends SocketInitializer {
+export class socketActions extends SocketInitializer {
   
   // Sends rental information to a specific user (Sub-admin)
   public async sendRental(rental: IRental): Promise<any> {
@@ -80,3 +80,4 @@ export class sendRentalToSubAdmin extends SocketInitializer {
     }
   }
 }
+

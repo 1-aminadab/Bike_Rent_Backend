@@ -16,6 +16,19 @@ export class RentalController {
       return res.status(500).json({ message: 'Failed to create rental' });
     }
   }
+  
+  public async getAllRentalById(req: Request, res: Response): Promise<Response> {
+    try {
+      const rental = await rentalService.getAllRental()
+      if (!rental) {
+        return res.status(404).json({ message: 'Rental not found' });
+      }
+      return res.status(200).json(rental);
+    } catch (error) {
+      logger.error('Error in getRentalById controller', { error });
+      return res.status(500).json({ message: 'Failed to retrieve rental' });
+    }
+  }
 
   public async getRentalById(req: Request, res: Response): Promise<Response> {
     try {
