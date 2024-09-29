@@ -16,4 +16,5 @@ router.put('/:id', (req, res) => rentalController.updateRental(req, res));
 
 router.delete('/:id', (req, res) => rentalController.deleteRental(req, res));
 
+router.get('/status/:status', (req, res) => rentalController.getRentalsByStatus(req, res));
 export default router;

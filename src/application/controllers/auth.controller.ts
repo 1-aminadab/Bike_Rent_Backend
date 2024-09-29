@@ -46,10 +46,10 @@ class AuthController {
     try {
       const result = await authService.refreshToken(req);
       logger.info('Tokens refreshed successfully');
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (error) {
       logger.error(`Token refresh failed: ${error.message}`);
-      res.status(error.status || 500).json({ message: error.message });
+      return res.status(error.status || 500).json({ message: error.message });
     }
   }
 }

@@ -45,6 +45,16 @@ export class RentalService {
       throw new Error('Failed to retrieve rental');
     }
   }
+
+  async getRentalsByStatus(status: string): Promise<IRental[]> {
+    try {
+      const rentals = await RentalModel.find({ status });
+      return rentals;
+    } catch (error) {
+      throw new Error(`Error fetching rentals by status: ${error.message}`);
+    }
+  }
+
   public async updateRental(rentalId: string, rentalData: Partial<IRental>): Promise<IRental | null> {
     try {
       const rental = await RentalModel.findByIdAndUpdate(rentalId, rentalData, { new: true });

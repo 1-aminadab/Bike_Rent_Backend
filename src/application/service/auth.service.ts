@@ -187,6 +187,9 @@ class AuthService {
   }
 
   public async refreshToken(req: Request): Promise<any> {
+    console.log('====================================');
+    console.log("here we go again");
+    console.log('====================================');
     try {
       const { refreshToken } = req.cookies;
       logger.info('Refreshing tokens', { refreshToken });

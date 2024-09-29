@@ -42,7 +42,21 @@ export class RentalController {
       return res.status(500).json({ message: 'Failed to retrieve rental' });
     }
   }
+  async getRentalsByStatus(req: Request, res: Response): Promise<void> {
+    const { status } = req.params;
 
+    try {
+      if (!['waiting', 'ongoing', 'completed', 'canceled'].includes(status)) {
+        res.status(400).json({ message: 'Invalid status provided' });
+        return;
+      }
+
+      const rentals = await rentalService.getRentalsByStatus(status)
+      res.status(200).json(rentals);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
   public async updateRental(req: Request, res: Response): Promise<Response> {
     try {
       const rental = await rentalService.updateRental(req.params.id, req.body);

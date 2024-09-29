@@ -3,20 +3,20 @@ import { trackingController } from '../../application/controllers/tracking.contr
 
 const router = express.Router();
 
-router.post('/tracking', trackingController.createTracking);
+router.post('/', trackingController.createTracking);
 
-router.get('/tracking/:id', trackingController.getTrackingById);
+router.get('/:id', trackingController.getTrackingById);
 
-router.get('/tracking', trackingController.getAllTracking);
+router.get('/', trackingController.getAllTracking);
 
 // Update tracking
-router.put('/tracking/:id', trackingController.updateTracking);
+router.put('/:id', trackingController.updateTracking);
 
 // Add tracking data (location, speed, distance, etc.)
-router.post('/tracking/:id/data', trackingController.addTrackingData);
+router.post('/:id/data', trackingController.addTrackingData);
 
 // Update status (start, pause, resume, stop)
-router.patch('/tracking/:id/status', trackingController.updateStatus);
+router.patch('/:id/status', trackingController.updateStatus);
 
 // Delete tracking
 router.delete('/tracking/:id', trackingController.deleteTracking);
