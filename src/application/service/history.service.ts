@@ -14,13 +14,31 @@ class HistoryService {
       throw new Error('Could not create history data');
     }
   }
-
+  
   // Get history by ID
-  async getHistoryById(id: mongoose.Types.ObjectId): Promise<IHistory | null> {
+  async getHistoryById(id: mongoose.Types.ObjectId): Promise<IHistory[] | null> {
     try {
       return await historyModel.findById(id);
     } catch (error) {
       logger.error(`Error fetching history data for ID: ${id}`, { error });
+      throw new Error('Could not fetch history data');
+    }
+  }
+
+  async getAllHistory(): Promise<IHistory[] | null> {
+    try {
+      return await historyModel.find();
+    } catch (error) {
+      logger.error(`Error fetching history data`, { error });
+      throw new Error('Could not fetch history data');
+    }
+  }
+  
+  async getHistoryByUserId(userId: mongoose.Types.ObjectId): Promise<IHistory[] | null> {
+    try {
+      return await historyModel.find({user_id:userId});
+    } catch (error) {
+      logger.error(`Error fetching history data for ID: ${userId}`, { error });
       throw new Error('Could not fetch history data');
     }
   }

@@ -13,6 +13,7 @@ import TrackingRouter from './presentation/routes/tracking.routes';
 import RentalRouter from './presentation/routes/rental.routes';
 import HistoryRouter from './presentation/routes/history.routes';
 import routeRouter from './presentation/routes/route.routes';
+import placeRouter from './presentation/routes/place.routes';
 
 export const app = express();
 app.use(cookieParser());
@@ -44,7 +45,7 @@ app.use('/api/tracking', TrackingRouter);
 app.use('/api/rental', RentalRouter);
 app.use('/api/history', HistoryRouter);
 app.use('/api/route', routeRouter);
-
+app.use('/api/place', placeRouter);
 app.use((err: ApplicationError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);

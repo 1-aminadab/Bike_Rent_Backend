@@ -29,6 +29,16 @@ export default class RouteController {
     }
   }
 
+  public async getAllRoutes(req: Request, res: Response): Promise<void> {
+    try {
+   
+      const route = await routeService.getAllRoutes();
+      res.status(200).json(route);
+    } catch (error) {
+      logger.error('Error in getRouteById controller', { error });
+      res.status(404).json({ error: error.message });
+    }
+  }
   // Update Route
   public async updateRoute(req: Request, res: Response): Promise<void> {
     try {

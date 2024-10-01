@@ -15,7 +15,6 @@ class HistoryController {
       res.status(500).json({ message: 'Error creating history' });
     }
   }
-
   // Get history by ID
   async getHistoryById(req: Request, res: Response): Promise<any> {
     try {
@@ -29,6 +28,30 @@ class HistoryController {
     }
   }
 
+  async getAllHistory(req: Request, res: Response): Promise<any> {
+    try {
+      const { id } = req.params;
+      const history = await historyService.getAllHistory();
+      if (!history) return res.status(404).json({ message: 'History not found' });
+      res.status(200).json(history);
+    } catch (error) {
+      logger.error('Error fetching history', { error });
+      res.status(500).json({ message: 'Error fetching history' });
+    }
+  }
+
+  async getHistoryByUserId(req: Request, res: Response): Promise<any> {
+    try {
+      const { userId } = req.params;
+      const history = await historyService.getHistoryByUserId(new mongoose.Types.ObjectId(userId));
+      if (!history) return res.status(404).json({ message: 'History not found' });
+      res.status(200).json(history);
+    } catch (error) {
+      logger.error('Error fetching history', { error });
+      res.status(500).json({ message: 'Error fetching history' });
+    }
+  }
+  
   // Update history entry
   async updateHistory(req: Request, res: Response): Promise<any> {
     try {

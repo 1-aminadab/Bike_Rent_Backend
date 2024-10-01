@@ -39,6 +39,24 @@ export default class RouteService {
     }
   }
 
+  // Get Route by ID
+  public async getAllRoutes(): Promise<IRoute[] | null> {
+    try {
+      
+      const routes= await RouteModel.find()
+      if (!routes) {
+        logger.warn('Routes not found');
+        throw new Error('Routes not found');
+      }
+      
+      logger.info('Routes retrieved successfully');
+      return routes;
+    } catch (error) {
+      logger.error('Error retrieving route', { error });
+      throw error;
+    }
+  }
+
   // Update Route
   public async updateRoute(routeId: string, updateData: Partial<IRoute>): Promise<IRoute | null> {
     try {

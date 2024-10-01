@@ -6,6 +6,7 @@ const routeController = new RouteController();
 
 routeRouter.post('/', routeController.createRoute);
 routeRouter.get('/:id', routeController.getRouteById);
+routeRouter.get('/', routeController.getAllRoutes);
 routeRouter.put('/:id', routeController.updateRoute);
 routeRouter.delete('/:id', routeController.deleteRoute);
 

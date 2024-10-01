@@ -130,26 +130,12 @@ class AuthService {
       await user.save();
 
       const { password, refreshToken: _, ...userData } = user.toObject();
-
-      // Set HTTP-only cookies for tokens
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only secure in production
-        sameSite: 'strict',  // Prevent CSRF
-        maxAge: 1000 * 60 * 15 // 15 minutes for access token (adjust as needed)
-      });
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        // sameSite: 'strict',  // Prevent CSRF
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days for refresh token (adjust as needed)
-      });
-
       logger.info(`User ${user._id} logged in successfully`);
       return {
         message: "Logged in successfully",
-        data: userData,
-        accessToken
+        userData,
+        accessToken,
+        refreshToken
       };
     } catch (error) {
       logger.error(`Login service error: ${error.message}`);
@@ -165,19 +151,6 @@ class AuthService {
       // Remove the refresh token from the user in the database
       await UserModel.updateOne({ _id: userId }, { refreshToken: null });
 
-      // Clear the access token and refresh token cookies
-      res.clearCookie('accessToken', {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',  // Only secure in production
-        sameSite: 'strict'  // Prevent CSRF
-      });
-
-      res.clearCookie('refreshToken', {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',  // Only secure in production
-        sameSite: 'strict'  // Prevent CSRF
-      });
-
       logger.info(`User ${userId} logged out successfully`);
       res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
@@ -187,11 +160,9 @@ class AuthService {
   }
 
   public async refreshToken(req: Request): Promise<any> {
-    console.log('====================================');
-    console.log("here we go again");
-    console.log('====================================');
+
     try {
-      const { refreshToken } = req.cookies;
+      const { refreshToken } = req.headers;
       logger.info('Refreshing tokens', { refreshToken });
 
       if (!refreshToken) {
