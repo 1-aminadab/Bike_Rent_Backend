@@ -39,12 +39,38 @@ class UserService {
     }
   }
 
-async getAllUsers(): Promise<IUser[]> {
+  async deleteAllUser(): Promise<void> {
     try {
-      return await UserModel.find({ role: UserRole.User}).exec();
+    await UserModel.deleteMany()
+    logger.info('all users deleted')
+  } catch (error) {
+      logger.error('Error deleting user', { error });
+      throw new Error('Error deleting user');
+    }
+  }
+
+  async getAllUsers(): Promise<IUser[]> {
+    logger.info('Fetching all users from the database');
+    
+    try {
+      const users = await UserModel.find({ role: UserRole.User }).exec();
+      if (users.length === 0) {
+        logger.warn('No users found with role: User');
+      } else {
+        logger.info(`Found ${users.length} users with role: User`);
+      }
+      
+      return users;
     } catch (error) {
-      logger.error('Error fetching all users', { error });
-      throw new Error('Error fetching all users');
+      logger.error('Error occurred while fetching users from the database', { error: error.message, stack: error.stack });
+      // You could check for specific error types here
+      if (error) {
+        logger.error('Database connection error', { error });
+      } else if (error) {
+        logger.error('Database query timed out', { error });
+      }
+      
+      throw new Error('Error fetching users from the database');
     }
   }
 //  ________________________ sub admins ___________________________________________

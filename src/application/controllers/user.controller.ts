@@ -47,19 +47,45 @@ class UserController {
     }
   }
 
-  async getAllUsers(req: Request, res: Response): Promise<void> {
+async deleteAllUsers(req: Request, res: Response): Promise<void> {
+  try {
+    await userService.deleteAllUser();
+    logger.info('all users deleted')
+  } catch (error) {
+    logger.error('Error in deleteUser controller', { error });
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+  async getAllUsers(req: Request, res: Response): Promise<any> {
+    logger.info('Received request to get all users');
+    
     try {
       const users = await userService.getAllUsers();
       
-      // Remove password and refreshToken fields from each user object
+      if (!users || users.length === 0) {
+        logger.warn('No users found in the system');
+        return res.status(404).json({ message: 'No users found' });
+      }
+      
+      logger.info('Sanitizing user data to exclude sensitive information');
       const sanitizedUsers = users.map(user => {
         const { password, refreshToken, ...userWithoutSensitiveInfo } = user;
         return userWithoutSensitiveInfo;
       });
-  
+      
+      logger.info('Successfully retrieved and sanitized user data');
       res.status(200).json(sanitizedUsers);
+      
     } catch (error) {
-      logger.error('Error in getAllUsers controller', { error });
+      logger.error('Error in getAllUsers controller', { error: error.message, stack: error.stack });
+      
+      // Additional error handling based on specific error types
+      if (error.message.includes('database')) {
+        logger.error('Database error detected in controller', { error });
+        return res.status(503).json({ message: 'Service unavailable. Please try again later.' });
+      }
+      
       res.status(500).json({ message: 'Internal server error' });
     }
   }

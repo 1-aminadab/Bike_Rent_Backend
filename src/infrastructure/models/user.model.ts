@@ -13,9 +13,9 @@ const UserSchema: Schema = new Schema({
   password: { type: String, required: true },
   verified: { type: Boolean, default: false },
   status:{type:Boolean, default: true},
-  address: { type: String, required: true },
-  age: { type: Number, required: true },
-  gender : { type: String, required: true },
+  address: { type: String, required: false },
+  age: { type: Number, required: false },
+  gender : { type: String, required: false },
   role: { type: String, enum: Object.values(UserRole) }
 }, {
   timestamps: true

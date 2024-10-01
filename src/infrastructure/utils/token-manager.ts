@@ -18,7 +18,7 @@ export class TokenManager {
       return jwt.verify(token, this.accessTokenSecret);
     }
 
-    static verifyRefreshToken(token: any): any {
+    static verifyRefreshToken(token: string): any {
       return jwt.verify(token, this.refreshTokenSecret);
     }
 }

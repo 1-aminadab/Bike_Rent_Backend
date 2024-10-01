@@ -16,6 +16,7 @@ router.patch('/update-sub-admin/:id',   userController.updateSubAdmin);
 router.patch('/update-sub-admin-password/:id',   passwordResetController.changePasswordByAdmin);
 
 router.delete('/delete-user/:id',  userController.deleteUser);
+router.delete('/delete-all-user', userController.deleteAllUsers)
 router.delete('/delete-sub-admin/:id',  userController.deleteSubAdmin);
 router.delete('/delete-admin/:id',  userController.deleteAdmin);
 

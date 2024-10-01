@@ -162,8 +162,7 @@ class AuthService {
   public async refreshToken(req: Request): Promise<any> {
 
     try {
-      const { refreshToken } = req.headers;
-      logger.info('Refreshing tokens', { refreshToken });
+      const refreshToken  = req.headers['authorization']?.split(' ')[1]
 
       if (!refreshToken) {
         throw { status: 401, message: "No refresh token provided" };

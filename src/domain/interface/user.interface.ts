@@ -12,10 +12,10 @@ export interface IUser{
     verified: boolean;
     role: UserRole;
     refreshToken: string;
-    address: string;
-    age: number;
-    gender: string;
-    status:boolean | string;
+    address?: string;
+    age?: number;
+    gender?: string;
+    status?:boolean | string;
     email:string;
     _id?:string;
 }

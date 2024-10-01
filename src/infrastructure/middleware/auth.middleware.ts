@@ -4,11 +4,7 @@ import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 import { TokenManager } from '../utils/token-manager';
 
 export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  // const token = req.cookies.accessToken;
-  console.log(req?.cookies?.accessToken,'in auth middle ware.........,')
-  const token =  req?.cookies?.accessToken || req.headers['authorization'];
-  console.log(token,'token.........auth,');
-  
+  const token =  req.headers['authorization'].split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Access Denied' });
