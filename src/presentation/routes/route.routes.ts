@@ -1,15 +1,12 @@
-// routes/routeRoutes.ts
-
 import { Router } from 'express';
-import { routeController } from '../../application/controllers/route.controller'; // Adjust the path as needed
+import RouteController from '../../application/controllers/route.controller';
 
-const router = Router();
+const routeRouter = Router();
+const routeController = new RouteController();
 
-// Define routes for the Route resource
-router.post('/', routeController.createRoute);          // Create a new route
-router.get('/', routeController.getAllRoutes);         // Get all routes
-router.get('/:id', routeController.getRouteById);      // Get a route by ID
-router.put('/:id', routeController.updateRoute);       // Update a route by ID
-router.delete('/:id', routeController.deleteRoute);    // Delete a route by ID
+routeRouter.post('/', routeController.createRoute);
+routeRouter.get('/:id', routeController.getRouteById);
+routeRouter.put('/:id', routeController.updateRoute);
+routeRouter.delete('/:id', routeController.deleteRoute);
 
-export default router;
+export default routeRouter;

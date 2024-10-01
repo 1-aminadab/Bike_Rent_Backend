@@ -12,9 +12,9 @@ class PaymentController {
       const paymentResponse = await paymentService.initializePayment(userId, amount, payment_method);
 
       // Redirect the user to the checkout URL provided by Chapa
-      console.log("redirecting to checkout page",paymentResponse.data.checkout_url)
-      res.redirect(paymentResponse.data.checkout_url);
-    } catch (error) {
+      console.log("redirecting to checkout page",paymentResponse)
+      return paymentResponse;
+    } catch (error:any) {
       res.status(500).json({ message: error.message });
     }
   }
@@ -25,7 +25,7 @@ class PaymentController {
       const { tx_ref } = req.params;
 
       // Call the service to verify the transaction
-      const verificationResponse = await paymentService.verifyPayment(tx_ref);
+      const verificationResponse:any = await paymentService.verifyPayment(tx_ref);
 
       // Update the transaction status based on the verification response
       if (verificationResponse.data.status === 'success') {
@@ -35,7 +35,7 @@ class PaymentController {
       }
 
       res.json(verificationResponse.data);
-    } catch (error) {
+    } catch (error:any) {
       res.status(500).json({ message: error.message });
     }
   }

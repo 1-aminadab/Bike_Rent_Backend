@@ -6,11 +6,6 @@ export interface ITrackingData {
   location: ILocation;
   speed?: number;
   event: 'start' | 'pause' | 'resume' | 'stop';
-  weather?: {
-    temperature?: number;
-    conditions?: string;
-  };
-  altitude?: number;
   distance_travelled?: number;
 }
 
@@ -37,24 +32,19 @@ const TrackingSchema: Schema = new Schema({
     {
       timestamp: { type: Date, default: Date.now, required: true },
       location: {
-        longitude: { type: Number, required: true },
-        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: false },
+        latitude: { type: Number, required: false },
       },
       speed: { type: Number },
-      battery_level: { type: Number },
       event: { type: String, enum: ['start', 'pause', 'resume', 'stop', 'incident'], default: 'start' },
-      weather: {
-        temperature: { type: Number },
-        conditions: { type: String },
-      },
       distance_travelled: { type: Number },
     },
   ],
   route_summary: {
-    total_distance: { type: Number },
-    average_speed: { type: Number },
-    maximum_speed: { type: Number },
-    total_duration: { type: Number },
+    total_distance: { type: Number, required: false},
+    average_speed: { type: Number, required: false},
+    maximum_speed: { type: Number, required: false},
+    total_duration: { type: Number, required: false},
   },
 });
 

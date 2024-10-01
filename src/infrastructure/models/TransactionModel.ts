@@ -1,8 +1,8 @@
 // models/TransactionModel.ts
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 interface Transaction extends Document {
-  user_id: string;
+  user_id: Types.ObjectId;
   tx_ref: string;
   amount: number;
   status: string;

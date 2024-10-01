@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 import { TokenManager } from '../utils/token-manager';
 
@@ -27,8 +27,8 @@ export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: 
 };
 
 export const authorizeRoles = (...roles: string[]) => (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  console.log('',req.user.role,'role.........,',roles);
   // const {data} = req.user
+  
   if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'Access forbidden: Insufficient rights' });
   }

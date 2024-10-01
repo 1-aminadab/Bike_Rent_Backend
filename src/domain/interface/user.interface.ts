@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { LoginDto, UserDto } from '../../application/dtos/user.dto';
 import { UserRole } from '../enums/user.enum';
 
-export interface IUser extends Document {
+export interface IUser{
     firstName: string;
     lastName: string;
     phoneNumber: string;
@@ -17,6 +17,7 @@ export interface IUser extends Document {
     gender: string;
     status:boolean | string;
     email:string;
+    _id?:string;
 }
 
 export interface IUserService {

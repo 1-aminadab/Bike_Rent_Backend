@@ -18,9 +18,6 @@ router.post('/verify-registration-otp/:receivedOtp', passwordResetController.ver
 router.post('/change-password', passwordResetController.changePassword);
 router.post('/forget-password', passwordResetController.forgetPassword);
 
-// Example of role-based route
-router.get('/admin', authenticateJWT, authorizeRoles('admin', 'super-admin'), (req, res) => {
-  res.status(200).json({ message: 'Welcome Admin!' });
-});
+
 
 export default router;

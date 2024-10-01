@@ -1,67 +1,56 @@
-// controllers/routeController.ts
-
 import { Request, Response } from 'express';
-import { routeService } from '../service/route.service'; // Adjust the path as needed
+import RouteService from '../service/route.service';
+import { logger } from '../../logger';
 
-class RouteController {
-  // Create a new route
-  async createRoute(req: Request, res: Response) {
+const routeService = new RouteService();
+
+export default class RouteController {
+  // Create a new Route
+  public async createRoute(req: Request, res: Response): Promise<void> {
     try {
-      const route = await routeService.createRoute(req.body);
-      res.status(201).json(route);
+      const routeData = req.body;
+      const newRoute = await routeService.createRoute(routeData);
+      res.status(201).json(newRoute);
     } catch (error) {
-      res.status(400).json({ message: 'Error creating route', error });
+      logger.error('Error in createRoute controller', { error });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  // Get all routes
-  async getAllRoutes(req: Request, res: Response) {
+  // Get Route by ID
+  public async getRouteById(req: Request, res: Response): Promise<void> {
     try {
-      const routes = await routeService.getAllRoutes();
-      res.status(200).json(routes);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching routes', error });
-    }
-  }
-
-  // Get a route by ID
-  async getRouteById(req: Request, res: Response) {
-    try {
-      const route = await routeService.getRouteById(req.params.id);
-      if (!route) {
-        return res.status(404).json({ message: 'Route not found' });
-      }
+      const routeId = req.params.id;
+      const route = await routeService.getRouteById(routeId);
       res.status(200).json(route);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching route', error });
+    } catch (error:any) {
+      logger.error('Error in getRouteById controller', { error });
+      res.status(404).json({ error: error?.message });
     }
   }
 
-  // Update a route by ID
-  async updateRoute(req: Request, res: Response) {
+  // Update Route
+  public async updateRoute(req: Request, res: Response): Promise<void> {
     try {
-      const updatedRoute = await routeService.updateRoute(req.params.id, req.body);
-      if (!updatedRoute) {
-        return res.status(404).json({ message: 'Route not found' });
-      }
+      const routeId = req.params.id;
+      const updateData = req.body;
+      const updatedRoute = await routeService.updateRoute(routeId, updateData);
       res.status(200).json(updatedRoute);
     } catch (error) {
-      res.status(400).json({ message: 'Error updating route', error });
+      logger.error('Error in updateRoute controller', { error });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  // Delete a route by ID
-  async deleteRoute(req: Request, res: Response) {
+  // Delete Route
+  public async deleteRoute(req: Request, res: Response): Promise<void> {
     try {
-      const deletedRoute = await routeService.deleteRoute(req.params.id);
-      if (!deletedRoute) {
-        return res.status(404).json({ message: 'Route not found' });
-      }
-      res.status(204).send();
+      const routeId = req.params.id;
+      await routeService.deleteRoute(routeId);
+      res.status(200).json({ message: 'Route deleted successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Error deleting route', error });
+      logger.error('Error in deleteRoute controller', { error });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 }
-
-export const routeController = new RouteController();

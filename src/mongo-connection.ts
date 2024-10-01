@@ -1,4 +1,4 @@
-import mongoose, { ConnectionOptions } from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import { logger } from './logger';
 
 // To use global promise for mongoose
@@ -30,19 +30,13 @@ export default class MongoConnection {
    */
   private isConnectedBefore: boolean = false;
 
-  /** Mongo connection options to be passed Mongoose */
-  private readonly mongoConnectionOptions: ConnectionOptions = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  };
 
   /**
    * Start mongo connection
    * @param mongoUrl MongoDB URL
    * @param onConnectedCallback callback to be called when mongo connection is successful
    */
-  constructor(mongoUrl: string) {
+  constructor(mongoUrl: any) {
     if (process.env.NODE_ENV === 'development') {
       mongoose.set('debug', true);
     }
@@ -55,7 +49,7 @@ export default class MongoConnection {
   }
 
   /** Close mongo connection */
-  public close(onClosed: (err: any) => void) {
+  public close(onClosed: boolean) {
     logger.log({
       level: 'info',
       message: 'Closing the MongoDB connection'
@@ -75,7 +69,7 @@ export default class MongoConnection {
       level: 'info',
       message: `Connecting to MongoDB at ${this.mongoUrl}`
     });
-    mongoose.connect(this.mongoUrl, this.mongoConnectionOptions).catch(() => { });
+    mongoose.connect(this.mongoUrl).catch(() => { });
   }
 
   /**
