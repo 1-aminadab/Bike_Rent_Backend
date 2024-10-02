@@ -23,11 +23,7 @@ export interface IHistory extends Document {
   payment_details: {
     payment_id: mongoose.Types.ObjectId;
   };
-  bike_status_at_end: {
-    battery_level: number;
-    bike_condiroutertion: 'good' | 'needs_service' | 'damaged';
-    last_serviced: Date;
-  };
+
   created_at: Date;
 }
 
@@ -53,10 +49,6 @@ const HistorySchema: Schema = new Schema({
   },
   payment_details: {
     payment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment', required: true },
-  },
-  bike_status_at_end: {
-    bike_condition: { type: String, enum: ['good', 'needs_service', 'damaged'] },
-    last_serviced: { type: Date },
   },
   created_at: { type: Date, default: Date.now },
 });
