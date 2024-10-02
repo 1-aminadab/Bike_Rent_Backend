@@ -23,7 +23,7 @@ export class PlaceService {
       const place = await PlaceModel.findById(id);
       if (!place) {
         logger.warn('Place not found', { id });
-        throw new Error('Place not found');
+        return null
       }
       logger.info('Place retrieved successfully', { place });
       return place;
