@@ -24,7 +24,7 @@ const RouteSchema: Schema = new Schema({
   end_place_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Place', required: true },
   route_name:{ type: String, required:false},
   distance: { type: Number },
-  estimated_duration: { type: Number },
+  estimated_duration: { type: Number, required: false },
   route_path: [
     {
       name: { type: String, require: false},
