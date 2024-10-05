@@ -11,7 +11,7 @@ export interface IPlace extends Document {
 const PlaceSchema: Schema = new Schema({
     name: { type: String, required: true },
     location: LocationSchema,
-    address: { type: String },
+    address: { type: String, required: false},
     admin_id:{ type: mongoose.Types.ObjectId, required: false},
     created_at: { type: Date, default: Date.now },
   });

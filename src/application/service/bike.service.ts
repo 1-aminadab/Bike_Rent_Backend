@@ -20,7 +20,7 @@ class BikeService {
 
   async getBikeById(bikeId: string) {
     try {
-      return await BikeModel.findById(bikeId).exec();
+      return await BikeModel.findOne({bikeId}).exec();
     } catch (error) {
       logger.error('Error fetching bike by ID', { error });
       throw new Error('Error fetching bike by ID');

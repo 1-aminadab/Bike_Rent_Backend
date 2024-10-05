@@ -17,22 +17,24 @@ class TrackingService {
   // Get tracking data by ID
   async getTrackingById(id: mongoose.Types.ObjectId): Promise<ITracking | null> {
     try {
-      return await trackingModel.findById(id);
+      return await trackingModel.findOne({user_id: id});
     } catch (error) {
       logger.error(`Error fetching tracking data for ID: ${id}`, { error });
       throw new Error('Could not fetch tracking data');
     }
   }
   
-    // Get tracking data by ID
-    async getAllTracking(): Promise<ITracking[] | null> {
-      try {
-        return await trackingModel.find();
-      } catch (error) {
-        logger.error(`Error fetching tracking data for ID: `, { error });
-        throw new Error('Could not fetch tracking data');
-      }
+  // Get tracking data by ID
+  async getAllTracking(): Promise<ITracking[] | null> {
+    try {
+      return await trackingModel.find();
+    } catch (error) {
+      logger.error(`Error fetching tracking data for ID: `, { error });
+      throw new Error('Could not fetch tracking data');
     }
+  }
+
+  
   // Update tracking data
   async updateTracking(id: mongoose.Types.ObjectId, updateData: Partial<ITracking>): Promise<ITracking | null> {
     try {

@@ -3,7 +3,7 @@ import { ILocation, LocationSchema } from './location.model';
 
 export interface IHistory extends Document {
   user_id: mongoose.Types.ObjectId;
-  bike_id: mongoose.Types.ObjectId;
+  bike_id: string;
   rental_details: {
     rental_id: mongoose.Types.ObjectId;
     end_time?: Date;
@@ -33,7 +33,7 @@ export interface IHistory extends Document {
 
 const HistorySchema: Schema = new Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  bike_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bike', required: true },
+  bike_id: { type: String, ref: 'Bike', required: true },
   rental_details: {
     rental_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Rental', required: true },
     end_time: { type: Date },
