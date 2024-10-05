@@ -26,6 +26,8 @@ class HistoryService {
   }
 
   async getAllHistory(): Promise<IHistory[] | null> {
+    console.log('getAllHistory called');
+    
     try {
       return await historyModel.find();
     } catch (error) {

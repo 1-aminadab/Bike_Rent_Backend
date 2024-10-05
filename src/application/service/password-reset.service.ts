@@ -87,24 +87,30 @@ export class PasswordResetService {
     }
   }
 
-  async changePassword(token: string, newPassword: string): Promise<OtpResponse> {
+  async changePassword(token: string, currentPassword: string, newPassword: string): Promise<OtpResponse> {
     try {
       const decodedToken = TokenManager.verifyAccessToken(token);
       const { phoneNumber } = decodedToken.data;
-
+  
       const user = await authService.findUser(phoneNumber);
       if (!user) {
-        logger.warn(`User with phone number ${phoneNumber} not found`);
         return { success: false, message: "User not found" };
       }
-
+  
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return { success: false, message: "Current password is incorrect" };
+      }
+  
+      if (currentPassword === newPassword) {
+        return { success: false, message: "New password cannot be the same as the current password" };
+      }
+  
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await userService.updateUser(user._id, { password: hashedPassword });
-
-      logger.info("Password changed successfully for user", { phoneNumber });
+  
       return { success: true, message: "Password changed successfully" };
     } catch (error) {
-      logger.error("Error changing password", { error });
       return { success: false, message: "Error changing password" };
     }
   }

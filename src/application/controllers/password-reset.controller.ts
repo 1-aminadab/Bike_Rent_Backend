@@ -70,18 +70,20 @@ class PasswordResetController {
   async changePassword(req: Request, res: Response): Promise<Response<SuccessResponse<any> | ErrorResponse>> {
     try {
       const authHeader = req.headers['authorization'];
-      console.log(authHeader,'auth h')
       const token = authHeader && authHeader.split(' ')[1];
-      console.log(token,'toke')
-      const { newPassword } = req.body;
-      if (!token || !newPassword) {
-        return res.status(400).json({ errors: [{ msg: 'Token and new password are required' }] });
+      const { currentPassword, newPassword } = req.body;
+  
+      if (!token || !currentPassword || !newPassword) {
+        return res.status(400).json({ errors: [{ msg: 'Token, current password, and new password are required' }] });
       }
-
-      const result = await passwordResetService.changePassword(token, newPassword);
+  
+      const result = await passwordResetService.changePassword(token, currentPassword, newPassword);
+      if (!result.success) {
+        return res.status(400).json({ errors: [{ msg: result.message }] });
+      }
+  
       return res.status(200).json({ data: result });
     } catch (error) {
-      logger.error('Error in changePassword controller', { error });
       return res.status(500).json({ errors: [{ msg: 'Internal server error' }] });
     }
   }

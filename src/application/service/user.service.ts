@@ -4,6 +4,14 @@ import UserModel  from '../../infrastructure/models/user.model';
 import { logger } from '../../logger';
 
 class UserService {
+
+  private checkRestrictedFields(user: Partial<IUser>): void {
+    if ('password' in user || 'phoneNumber' in user) {
+      throw new Error('Updating password or phoneNumber is not allowed.');
+    }
+  }
+
+
   async getUserById(userId: string): Promise<IUser | null> {
     try {
       return await UserModel.findById(userId).exec();
@@ -18,6 +26,8 @@ class UserService {
   
     try {
       // Cast the status to boolean if it exists
+      this.checkRestrictedFields(user);
+
       if (user.status) {  
         user.status = user.status === 'active';
       }
@@ -99,11 +109,10 @@ class UserService {
 async updateSubAdmin(userId: string, user: Partial<IUser>): Promise<IUser | null> {
   try {
     console.log('new data ..............');
-    
+    this.checkRestrictedFields(user);
+
     // Handle status conversion if necessary
-    if (user.status) {
-      user.status = user.status === 'active';
-    }
+   
 
     return await UserModel.findOneAndUpdate({ _id: userId, role: UserRole.SubAdmin }, user, { new: true }).exec();
   } catch (error) {
@@ -116,10 +125,7 @@ async updateSubAdmin(userId: string, user: Partial<IUser>): Promise<IUser | null
 async updateAdmin(userId: string, user: Partial<IUser>): Promise<IUser | null> {
   try {
     // Handle status conversion if necessary
-    if (user.status) {
-      user.status = user.status === 'active';
-    }
-
+    this.checkRestrictedFields(user);
     return await UserModel.findOneAndUpdate({ _id: userId, role: UserRole.Admin }, user, { new: true }).exec();
   } catch (error) {
     logger.error('Error updating admin', { error });

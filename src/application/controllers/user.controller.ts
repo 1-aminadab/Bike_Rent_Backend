@@ -75,7 +75,7 @@ async deleteAllUsers(req: Request, res: Response): Promise<void> {
       });
       
       logger.info('Successfully retrieved and sanitized user data');
-      res.status(200).json(sanitizedUsers);
+      res.status(200).json(users);
       
     } catch (error) {
       logger.error('Error in getAllUsers controller', { error: error.message, stack: error.stack });

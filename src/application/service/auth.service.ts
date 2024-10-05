@@ -105,6 +105,8 @@ class AuthService {
     }
   }
   public async login(credentials: LoginDto, res: Response): Promise<any> {
+    console.log(credentials);
+    
     try {
       logger.info('Login attempt', { phoneNumber: credentials.phoneNumber });
 

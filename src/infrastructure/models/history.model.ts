@@ -43,7 +43,7 @@ const HistorySchema: Schema = new Schema({
     average_speed: { type: Number },
     maximum_speed: { type: Number },
     route_summary: [
-      {
+      { 
         timestamp: { type: Date },
         location: LocationSchema,
         speed: { type: Number },

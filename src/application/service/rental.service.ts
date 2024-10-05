@@ -34,7 +34,7 @@ export class RentalService {
   }
   public async getAllRental(): Promise<IRental[] | null> {
     try {
-      const rentals= await RentalModel.find();
+      const rentals= await RentalModel.find({ status: 'ongoing' });
       if (!rentals) {
         throw new Error('Rental not found');
       }
