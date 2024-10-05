@@ -11,9 +11,10 @@ export interface ITrackingData {
 
 export interface ITracking extends Document {
   rental_id: mongoose.Types.ObjectId;
-  bike_id: mongoose.Types.ObjectId;
+  bike_id: string;
   user_id: mongoose.Types.ObjectId;
   route_id?: mongoose.Types.ObjectId;
+  start_location:mongoose.Types.ObjectId;
   tracking_data: ITrackingData[];
   route_summary: {
     total_distance: number;
@@ -24,13 +25,14 @@ export interface ITracking extends Document {
 }
 
 const TrackingSchema: Schema = new Schema({
-  rental_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Rental', required: true },
-  bike_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bike', required: true },
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  rental_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Rental' },
+  bike_id: { type: String, ref: 'Bike', required: true },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   route_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
+  start_location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location' },
   tracking_data: [
     {
-      timestamp: { type: Date, default: Date.now, required: true },
+      timestamp: { type: Date, default: Date.now },
       location: {
         longitude: { type: Number, required: false },
         latitude: { type: Number, required: false },
