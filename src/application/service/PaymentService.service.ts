@@ -41,10 +41,10 @@ class PaymentService {
     }
 
     const tx_ref = this.generateTxRef();
-console.log(user, tx_ref,amount,'..............')
+    console.log(user, tx_ref, amount, '..............')
     // Save the transaction in the database
     await this.saveTransaction(user, amount, tx_ref);
-
+      
     const payload = {
       amount: amount.toString(),
       currency: 'ETB',
@@ -65,7 +65,7 @@ console.log(user, tx_ref,amount,'..............')
       Authorization: `Bearer ${this.barrierToken}`
     };
 
-    console.log(payload,headers,'......pl')
+    console.log(payload, headers, '......pl')
     const response = await axios.post(`https://api.chapa.co/v1/transaction/initialize`, payload, { headers });
     console.log(response.data)
     return response.data;
