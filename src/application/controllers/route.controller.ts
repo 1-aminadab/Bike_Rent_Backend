@@ -23,9 +23,9 @@ export default class RouteController {
       const routeId = req.params.id;
       const route = await routeService.getRouteById(routeId);
       res.status(200).json(route);
-    } catch (error) {
+    } catch (error:any) {
       logger.error('Error in getRouteById controller', { error });
-      res.status(404).json({ error: error.message });
+      res.status(404).json({ error: error?.message });
     }
   }
 

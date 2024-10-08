@@ -6,14 +6,15 @@ import { paymentService } from '../service/PaymentService.service';
 class PaymentController {
   async initiatePayment(req: Request, res: Response) {
     try {
-      const { userId, amount } = req.body;
+      const { userId, amount, payment_method ="electronic"} = req.body;
 
       // Call the service to initialize payment
-      const paymentResponse:any = await paymentService.initializePayment(userId, amount);
+      const paymentResponse = await paymentService.initializePayment(userId, amount, payment_method);
 
       // Redirect the user to the checkout URL provided by Chapa
-      res.redirect(paymentResponse.data.checkout_url);
-    } catch (error) {
+      console.log("redirecting to checkout page",paymentResponse)
+      return paymentResponse;
+    } catch (error:any) {
       res.status(500).json({ message: error.message });
     }
   }
@@ -34,7 +35,7 @@ class PaymentController {
       }
 
       res.json(verificationResponse.data);
-    } catch (error) {
+    } catch (error:any) {
       res.status(500).json({ message: error.message });
     }
   }

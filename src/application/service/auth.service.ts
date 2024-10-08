@@ -75,7 +75,7 @@ class AuthService {
         message: "OTP sent. Please verify to complete registration.",
         verificationId: userDto,
       };
-    } catch (error) {
+    } catch (error:any) {
       logger.error(`Register service error: ${error.message}`);
       throw error;
     }
@@ -99,7 +99,7 @@ class AuthService {
         message: "Registration completed successfully",
         data: user,
       };
-    } catch (error) {
+    } catch (error:any) {
       logger.error(`Complete registration error: ${error.message}`);
       throw error;
     }
@@ -139,7 +139,7 @@ class AuthService {
         accessToken,
         refreshToken
       };
-    } catch (error) {
+    } catch (error:any) {
       logger.error(`Login service error: ${error.message}`);
       throw error;
     }
@@ -155,7 +155,7 @@ class AuthService {
 
       logger.info(`User ${userId} logged out successfully`);
       res.status(200).json({ message: 'Logged out successfully' });
-    } catch (error) {
+    } catch (error:any) {
       logger.error(`Logout service error: ${error.message}`);
       throw error;
     }
@@ -195,7 +195,7 @@ class AuthService {
         refreshToken: newRefreshToken,
         userData: user
       };
-    } catch (error) {
+    } catch (error:any) {
       logger.error(`Refresh token service error: ${error.message}`);
       throw error;
     }

@@ -4,6 +4,8 @@ import { authService } from "./auth.service";
 import { TokenManager } from "../../infrastructure/utils/token-manager";
 import { userService } from "./user.service";
 import { logger } from "../../logger";
+import { IUser } from "../../domain/interface/user.interface";
+require('dotenv').config();
 
 interface OtpResponse {
   success: boolean;
@@ -54,7 +56,7 @@ export class PasswordResetService {
         logger.warn("Error verifying OTP");
         return { success: false, message: "Error verifying OTP" };
       }
-    } catch (err) {
+    } catch (err:any) {
       logger.error("Error verifying registration OTP", { error: err.message });
       return { success: false, message: "Error verifying OTP" };
     }
@@ -81,7 +83,7 @@ export class PasswordResetService {
         logger.warn("Error verifying OTP");
         return { success: false, message: "Error verifying OTP" };
       }
-    } catch (err) {
+    } catch (err:any) {
       logger.error("Error verifying OTP", { error: err.message });
       return { success: false, message: "Error verifying OTP" };
     }
@@ -89,6 +91,7 @@ export class PasswordResetService {
 
   async changePassword(token: string, currentPassword: string, newPassword: string): Promise<OtpResponse> {
     try {
+      // Verify token and extract phone number
       const decodedToken = TokenManager.verifyAccessToken(token);
       const { phoneNumber } = decodedToken.data;
   
@@ -107,6 +110,8 @@ export class PasswordResetService {
       }
   
       const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      // Update the user's password in the database
       await userService.updateUser(user._id, { password: hashedPassword });
   
       return { success: true, message: "Password changed successfully" };
@@ -114,10 +119,13 @@ export class PasswordResetService {
       return { success: false, message: "Error changing password" };
     }
   }
-
-  async changePasswordByAdmin(phoneNumber: string, newPassword: string): Promise<OtpResponse> {
+  
+  async changePasswordByAdmin(
+    phoneNumber: string,
+    newPassword: string
+  ): Promise<OtpResponse> {
     try {
-      const user = await authService.findUser(phoneNumber);
+      const user:any = await authService.findUser(phoneNumber);
       if (!user) {
         logger.warn(`User with phone number ${phoneNumber} not found`);
         return { success: false, message: "User not found" };
@@ -135,9 +143,11 @@ export class PasswordResetService {
   }
 
   private async sendOtpViaSms(phoneNumber: string): Promise<any> {
-    const base_url = "https://api.afromessage.com/api/challenge";
-    const token = "YOUR_ACTUAL_TOKEN"; // Replace with your actual token
-    const identifier = "YOUR_IDENTIFIER"; // Replace with your actual identifier
+    // Configure the Afromessage API parameters
+    const base_url = process.env.AFRO_API_KEY;
+    const token = process.env.AFRO_TOKEN
+      // "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs	"; // Replace with your actual token
+    const identifier = process.env.AFRO_IDENTIFIER; // Replace with your actual identifier
     const sender = ""; // Replace with your actual sender name
 
     const url = `${base_url}?from=${identifier}&sender=${sender}&to=${phoneNumber}&ttl=300&len=4&t=0`;

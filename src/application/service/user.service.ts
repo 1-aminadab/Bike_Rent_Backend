@@ -2,13 +2,53 @@ import { UserRole } from '../../domain/enums/user.enum';
 import { IUser } from '../../domain/interface/user.interface';
 import UserModel  from '../../infrastructure/models/user.model';
 import { logger } from '../../logger';
+import moment from "moment";
 
 class UserService {
-
   private checkRestrictedFields(user: Partial<IUser>): void {
     if ('password' in user || 'phoneNumber' in user) {
       throw new Error('Updating password or phoneNumber is not allowed.');
     }
+  }
+
+
+  async getCustomerStats() {
+    const today = new Date();
+    const oneDay = 1000 * 60 * 60 * 24;
+    
+    // Filter users by registration date
+    const totalUsers = await UserModel.countDocuments({ role: UserRole.User});
+
+    const todayUsers = await UserModel.countDocuments({
+      createdAt: { $gte: new Date(today.setHours(0, 0, 0, 0)) }
+    });
+
+    const weekUsers = await UserModel.countDocuments({
+      createdAt: { $gte: new Date(today.getTime() - 7 * oneDay) }
+    });
+
+    const monthUsers = await UserModel.countDocuments({
+      createdAt: { $gte: new Date(today.setDate(1)) }
+    });
+
+    const lastThreeYearsUsers = await UserModel.aggregate([
+      {
+        $group: {
+          _id: { $year: '$createdAt' },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: -1 } },
+      { $limit: 3 }
+    ]);
+
+    return {
+      totalUsers,
+      todayUsers,
+      weekUsers,
+      monthUsers,
+      lastThreeYearsUsers,
+    };
   }
 
 
@@ -153,6 +193,107 @@ async deleteAdmin(userId: string): Promise<IUser | null> {
   }
 }
 
+async  getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
+  try {
+    // let startDate, endDate, groupBy, dateFormat, duration;
+    let startDate:any, endDate:any, groupBy:any, dateFormat:any, duration:any, unit:any;
+
+    const now = moment();
+
+    // Define time frame logic
+    switch (timeFrame) {
+      case "today":
+        startDate = now.clone().startOf("day");
+        endDate = now.clone().endOf("day");
+        groupBy = { hour: { $hour: "$createdAt" } };
+        dateFormat = "HH"; // Group by hour
+        duration = 24;
+        break;
+      case "this week":
+        startDate = now.clone().startOf("isoWeek");
+        endDate = now.clone().endOf("isoWeek");
+        groupBy = { day: { $dayOfWeek: "$createdAt" } };
+        dateFormat = "dddd"; // Group by day
+        duration = 7;
+        break;
+      case "this month":
+        startDate = now.clone().startOf("month");
+        endDate = now.clone().endOf("month");
+        groupBy = { week: { $week: "$createdAt" } };
+        dateFormat = "Week"; // Group by week
+        duration = 4; // Approximate number of weeks
+        break;
+      case "this year":
+        startDate = now.clone().startOf("year");
+        endDate = now.clone().endOf("year");
+        groupBy = { month: { $month: "$createdAt" } };
+        dateFormat = "MMM"; // Group by month
+        duration = 12;
+        break;
+      default:
+        throw new Error("Invalid time frame");
+    }
+
+    const customerData = await UserModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+        },
+      },
+      {
+        $group: {
+          _id: groupBy,
+          verifiedCustomers: {
+            $sum: { $cond: [{ $eq: ["$verified", true] }, 1, 0] },
+          },
+          unverifiedCustomers: {
+            $sum: { $cond: [{ $eq: ["$verified", false] }, 1, 0] },
+          },
+          totalCustomers: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    // Fill in any missing time slots (optional, for smooth graphs)
+    const categories = [];
+    const verifiedData = [];
+    const unverifiedData = [];
+    const totalData = [];
+
+    for (let i = 0; i < duration; i++) {
+      const key = startDate.clone().add(i, timeFrame === "today" ? "hours" : "days").format(dateFormat);
+      // const key = startDate.clone().add(i, unit).format(dateFormat); // Use the correct format and time unit
+
+      // const transaction = customerData.find((t) => t._id === i + 1); // Adjust indexing based on groupBy
+
+      const transaction = customerData.find((t) => {
+        if (timeFrame === "today") return t._id.hour === i; // Match hours for 'today'
+        if (timeFrame === "this week") return t._id.day === i + 1; // Match days of the week
+        if (timeFrame === "this month") return t._id.week === startDate.clone().add(i, 'weeks').week(); // Match weeks of the month
+        if (timeFrame === "this year") return t._id.month === i + 1; // Match months of the year
+      });
+      categories.push(key);
+      verifiedData.push(transaction ? transaction.verifiedCustomers : 0);
+      unverifiedData.push(transaction ? transaction.unverifiedCustomers : 0);
+      totalData.push(transaction ? transaction.totalCustomers : 0);
+    }
+
+    return {
+      categories,
+      series: [
+        { name: "Verified Customers", data: verifiedData },
+        { name: "Unverified Customers", data: unverifiedData },
+        { name: "Total Customers", data: totalData },
+      ],
+    };
+  } catch (error) {
+    console.error("Error fetching customer data:", error);
+    throw new Error("Error fetching customer data");
+  }
+}
 
 }
 

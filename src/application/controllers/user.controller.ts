@@ -3,6 +3,17 @@ import { userService } from '../service/user.service';
 import { logger } from '../../logger';
 
 class UserController {
+
+  async getCustomerStats(req: Request, res: Response): Promise<void> {
+    try {
+      const stats = await userService.getCustomerStats();
+      res.status(200).json(stats);
+    } catch (error) {
+      logger.error('Error in getCustomerStats controller', { error });
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
   async getUserById(req: Request, res: Response): Promise<void> {
     try {
       const user = await userService.getUserById(req.params.id);
@@ -169,6 +180,17 @@ async deleteAllUsers(req: Request, res: Response): Promise<void> {
       logger.error('Error in deleteAdmin controller', { error });
       res.status(500).json({ message: 'Internal server error' });
     }
+  }
+
+  async getCustomersByTimeFrame(req: Request, res: Response) {
+    const { timeFrame } = req.params;
+
+    try {
+    const transactions = await userService.getCustomersByTimeFrame(timeFrame);
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
   }
 }
 

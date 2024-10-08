@@ -11,6 +11,9 @@ PaymentRouter.get('/verify/:tx_ref', paymentController.verifyPayment);
 PaymentRouter.get('/all', transactionController.getAllTransactions);
 PaymentRouter.get('/history/:userId', transactionController.getTransactionHistory);
 PaymentRouter.get('/verify', transactionController.verifyTransaction);
+PaymentRouter.get('/revenue', transactionController.getTotalRevenue);
+PaymentRouter.get('/payment_method', transactionController.filterTransactionsByMethod);
+PaymentRouter.get('/transactions/:timeFrame', transactionController.getTransactionsByTimeFrame);
 export default PaymentRouter;
 
 
