@@ -51,16 +51,18 @@ console.log(user, tx_ref,amount,'..............')
       email: user?.email,
       first_name: user.firstName,
       last_name: user.lastName,
-      phone_number: `+251${user.phoneNumber}`,
+      phone_number: user.phoneNumber,
       tx_ref,
       callback_url: 'https://webhook.site/your-webhook-url',
-      return_url: 'http://addisbike.com',
+      return_url: 'second_project://payment-success',
       customization: {
         title: 'addis bike',
         description: 'I love online payment',
       },
     };
-
+    console.log('payload====================================');
+    console.log(payload);
+    console.log('====================================');
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`
     };

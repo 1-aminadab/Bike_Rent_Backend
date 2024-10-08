@@ -9,7 +9,7 @@ router.get('/all-user', userController.getAllUsers);
 router.get('/admins',  userController.getAdmins);
 router.get('/sub-admins', userController.getSubAdmins);
 
-router.get('/get-user/:id', authenticateJWT,authorizeRoles('admin'), userController.getUserById);
+router.get('/get-user/:id', userController.getUserById);
 
 router.patch('/update-user/:id',   userController.updateUser);
 router.patch('/update-sub-admin/:id',   userController.updateSubAdmin);
