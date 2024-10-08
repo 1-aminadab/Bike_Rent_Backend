@@ -19,8 +19,10 @@ class BikeService {
   }
 
   async getBikeById(bikeId: string) {
+    console.log(bikeId,'bid .......');
+    
     try {
-      return await BikeModel.findOne({bikeId}).exec();
+      return await BikeModel.findById(bikeId).exec();
     } catch (error) {
       logger.error('Error fetching bike by ID', { error });
       throw new Error('Error fetching bike by ID');

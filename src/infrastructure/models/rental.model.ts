@@ -11,7 +11,7 @@ export interface IRental extends Document {
   end_place_id?: mongoose.Types.ObjectId;
   start_place_admin?:mongoose.Types.ObjectId;
   end_place_admin?:mongoose.Types.ObjectId;
-  route_id?: mongoose.Types.ObjectId;
+  route_id?: mongoose.Types.ObjectId; 
   created_at: Date;
   updated_at: Date;
 }
