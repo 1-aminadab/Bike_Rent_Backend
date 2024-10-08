@@ -61,6 +61,8 @@ console.log(user, tx_ref,amount,'..............')
       },
     };
 
+    
+
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`
     };
