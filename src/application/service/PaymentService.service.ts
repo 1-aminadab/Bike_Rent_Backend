@@ -51,7 +51,7 @@ class PaymentService {
       email: user?.email,
       first_name: user.firstName,
       last_name: user.lastName,
-      phone_number: `+251${user.phoneNumber}`,
+      phone_number: user.phoneNumber,
       tx_ref,
       callback_url: 'https://webhook.site/your-webhook-url',
       return_url: 'http://addisbike.com',
@@ -60,7 +60,7 @@ class PaymentService {
         description: 'I love online payment',
       },
     };
-
+   console.log(payload)
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`
     };
