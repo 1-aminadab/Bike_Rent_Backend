@@ -52,7 +52,7 @@ class PaymentService {
       email: user?.email,
       first_name: user.firstName,
       last_name: user.lastName,
-      phone_number: `${user.phoneNumber}`,
+      phone_number: user.phoneNumber,
       tx_ref,
       callback_url: 'https://webhook.site/your-webhook-url',
       return_url: 'http://addisbike.com',
@@ -63,7 +63,7 @@ class PaymentService {
       status: 'pending',  // Add the status field to the payload
       payment_method: payment_method, // Include payment method in the payload
     };
-
+   console.log(payload)
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`,
     };

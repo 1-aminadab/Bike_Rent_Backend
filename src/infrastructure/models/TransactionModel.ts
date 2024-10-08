@@ -18,7 +18,7 @@ const TransactionSchema = new Schema<Transaction>(
     user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     tx_ref: { type: String, required: true, unique: true },
     amount: { type: Number, required: true },
-    status: { type: String, required: true },
+    status: { type: String, required: false },
     email: { type: String, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
