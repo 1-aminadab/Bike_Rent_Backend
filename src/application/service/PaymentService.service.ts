@@ -60,9 +60,7 @@ console.log(user, tx_ref,amount,'..............')
         description: 'I love online payment',
       },
     };
-    console.log('payload====================================');
-    console.log(payload);
-    console.log('====================================');
+
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`
     };
