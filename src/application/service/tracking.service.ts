@@ -17,7 +17,7 @@ class TrackingService {
   // Get tracking data by ID
   async getTrackingById(id: mongoose.Types.ObjectId): Promise<ITracking | null> {
     try {
-      return await trackingModel.findOne({user_id: id});
+      return await trackingModel.findById(id);
     } catch (error) {
       logger.error(`Error fetching tracking data for ID: ${id}`, { error });
       throw new Error('Could not fetch tracking data');
