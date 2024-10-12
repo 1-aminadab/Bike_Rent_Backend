@@ -5,9 +5,9 @@ import { passwordResetController } from '../../application/controllers/password-
 
 const router = Router();
 
-router.get('/all-user', userController.getAllUsers);
-router.get('/admins',  userController.getAdmins);
-router.get('/sub-admins', userController.getSubAdmins);
+router.get('/all-user',authenticateJWT,authorizeRoles('admin'), userController.getAllUsers);
+router.get('/admins', authenticateJWT,authorizeRoles('admin'),  userController.getAdmins);
+router.get('/sub-admins', authenticateJWT,authorizeRoles('admin'),userController.getSubAdmins);
 
 // router.get('/get-user/:id', authenticateJWT,authorizeRoles('admin'), userController.getUserById);
 router.get('/get-user/:id', userController.getUserById);

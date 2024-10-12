@@ -11,6 +11,7 @@ import {
 } from "../../infrastructure/utils/validator";
 import { PasswordResetService } from "./password-reset.service";
 import { Request, Response } from "express";
+import { UserRole } from '../../domain/enums/user.enum';
 
 const otpService = new PasswordResetService();
 
@@ -144,6 +145,53 @@ class AuthService {
       throw error;
     }
   }
+  public async AdminLogin(credentials: LoginDto, res: Response): Promise<any> {
+    console.log(credentials);
+  
+    try {
+      logger.info('Login attempt', { phoneNumber: credentials.phoneNumber });
+  
+      // Find the user with the provided phone number and ensure the user is an admin
+      const user = await UserModel.findOne({ phoneNumber: credentials.phoneNumber, role: UserRole.Admin });
+  
+      if (!user) {
+        throw { status: 401, message: "Invalid credentials or not an admin" }; // Add admin check to the error message
+      }
+  
+      if (!user.status) {
+        throw { status: 403, message: "Your account is inactive" };
+      }
+  
+      const isPasswordValid = await this.comparePassword(credentials.password, user.password);
+      if (!isPasswordValid) {
+        throw { status: 401, message: "Invalid credentials" };
+      }
+  
+      // Generate access and refresh tokens
+      const accessToken = TokenManager.generateAccessToken(user);
+      const refreshToken = TokenManager.generateRefreshToken(user);
+  
+      // Save refresh token to the user in the database
+      user.refreshToken = refreshToken;
+      await user.save();
+  
+      // Exclude password and refreshToken from the user data in the response
+      const { password, refreshToken: _, ...userData } = user.toObject();
+      logger.info(`Admin user ${user._id} logged in successfully`);
+  
+      return {
+        message: "Logged in successfully",
+        userData,
+        accessToken,
+        refreshToken
+      };
+  
+    } catch (error: any) {
+      logger.error(`Admin login service error: ${error.message}`);
+      throw error;
+    }
+  }
+  
 
 
   public async logout(userId: string, res: Response): Promise<void> {

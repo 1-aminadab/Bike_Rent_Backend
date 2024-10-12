@@ -20,15 +20,16 @@ class UserService {
     const totalUsers = await UserModel.countDocuments({ role: UserRole.User});
 
     const todayUsers = await UserModel.countDocuments({
-      createdAt: { $gte: new Date(today.setHours(0, 0, 0, 0)) }
+      createdAt: { $gte: new Date(today.setHours(0, 0, 0, 0)) },role: UserRole.User
+      
     });
 
     const weekUsers = await UserModel.countDocuments({
-      createdAt: { $gte: new Date(today.getTime() - 7 * oneDay) }
+      createdAt: { $gte: new Date(today.getTime() - 7 * oneDay) }, role: UserRole.User
     });
 
     const monthUsers = await UserModel.countDocuments({
-      createdAt: { $gte: new Date(today.setDate(1)) }
+      createdAt: { $gte: new Date(today.setDate(1)) }, role: UserRole.User
     });
 
     const lastThreeYearsUsers = await UserModel.aggregate([
@@ -36,11 +37,14 @@ class UserService {
         $group: {
           _id: { $year: '$createdAt' },
           count: { $sum: 1 }
-        }
+        },
       },
       { $sort: { _id: -1 } },
-      { $limit: 3 }
-    ]);
+      { $limit: 3 },
+      
+    ],
+    {role: UserRole.User}
+  );
 
     return {
       totalUsers,

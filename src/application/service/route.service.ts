@@ -5,6 +5,23 @@ import mongoose from 'mongoose';
 
 export default class RouteService {
   // Create a new Route
+
+  public async getRoutesByPlace(startPlaceId: string, endPlaceId: string): Promise<IRoute[]> {
+    try {
+      // Find routes where the start_place_id or end_place_id matches
+      const routes = await RouteModel.find({
+        $or: [{ start_place_id: startPlaceId }, { end_place_id: endPlaceId }],
+      }).populate('start_place_id').populate('end_place_id');
+      
+      if (!routes) {
+        throw new Error('No routes found');
+      }
+      return routes;
+    } catch (error) {
+      throw new Error(`Error fetching routes: ${error.message}`);
+    }
+  }
+  
   public async createRoute(routeData: IRoute): Promise<IRoute> {
     try {
       const newRoute = new RouteModel(routeData);

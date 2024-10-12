@@ -6,6 +6,16 @@ const routeService = new RouteService();
 
 export default class RouteController {
   // Create a new Route
+
+  public async getRoutesByPlace(req: Request, res: Response) {
+    try {
+      const { startPlaceId, endPlaceId } = req.query; // Assumed to be passed via query params
+      const routes = await routeService.getRoutesByPlace(startPlaceId as string, endPlaceId as string);
+      return res.status(200).json(routes);
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to retrieve routes', error: error.message });
+    }
+  }
   public async createRoute(req: Request, res: Response): Promise<void> {
     try {
       const routeData = req.body;

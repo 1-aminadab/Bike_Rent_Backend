@@ -27,6 +27,17 @@ class AuthController {
       res.status(error.status || 500).json({ message: error.message });
     }
   }
+  async AdminLogin(req: Request, res: Response) {
+    logger.info('Login request received', { body: req.body });
+    try {
+      const data = await authService.AdminLogin(req.body, res);
+      logger.info('User logged in successfully');
+      res.status(200).json(data);
+    } catch (error) {
+      logger.error(`Login failed: ${error.message}`);
+      res.status(error.status || 500).json({ message: error.message });
+    }
+  }
 
   async logout(req: AuthenticatedRequest, res: Response) {
     logger.info('Logout request received', { userId: req.user._id });

@@ -8,6 +8,7 @@ const router = Router();
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/admin-login', authController.AdminLogin);
 router.post('/logout', authenticateJWT, authController.logout);
 router.post('/refresh-tokens', authController.refreshTokens);
 

@@ -8,7 +8,9 @@ const rentalController = new RentalController();
 
 router.post('/', (req, res) => rentalController.createRental(req, res));
 
-router.get('/', (req, res) => rentalController.getAllRentalById(req, res));
+router.get('/direction-count', (req, res) => rentalController.getRentalCountByRouteAndDirection(req, res));
+router.get('/', (req, res) => rentalController.getAllHistory(req, res));
+router.get('/history/', (req, res) => rentalController.getAllHistory(req, res));
 
 router.get('/:id', (req, res) => rentalController.getRentalById(req, res));
 

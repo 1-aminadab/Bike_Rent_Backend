@@ -7,6 +7,16 @@ import { logger } from '../../logger';
 const rentalService = new RentalService();
 
 export class RentalController {
+
+  public async getRentalCountByRouteAndDirection(req: Request, res: Response): Promise<void> {
+    try {
+      const rentalCounts = await rentalService.getRentalCountByRouteAndDirection();
+      res.status(200).json(rentalCounts);
+    } catch (error) {
+      logger.error('Error retrieving rental counts by route and direction', { error });
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
   public async createRental(req: Request, res: Response) {
     try {
       const rental = await rentalService.createRental(req.body);
@@ -17,9 +27,22 @@ export class RentalController {
     }
   }
   
-  public async getAllRentalById(req: Request, res: Response): Promise<Response> {
+  public async getAllRental(req: Request, res: Response): Promise<Response> {
     try {
       const rental = await rentalService.getAllRental()
+      if (!rental) {
+        return res.status(404).json({ message: 'Rental not found' });
+      }
+      return res.status(200).json(rental);
+    } catch (error) {
+      logger.error('Error in getRentalById controller', { error });
+      return res.status(500).json({ message: 'Failed to retrieve rental' });
+    }
+  }
+
+  public async getAllHistory(req: Request, res: Response): Promise<Response> {
+    try {
+      const rental = await rentalService.getAllHistory()
       if (!rental) {
         return res.status(404).json({ message: 'Rental not found' });
       }
