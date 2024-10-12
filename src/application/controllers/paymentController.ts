@@ -12,7 +12,7 @@ class PaymentController {
       const paymentResponse:any = await paymentService.initializePayment(userId, amount);
 
       // Redirect the user to the checkout URL provided by Chapa
-      res.redirect(paymentResponse.data.checkout_url);
+      res.status(200).json({ data:paymentResponse });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

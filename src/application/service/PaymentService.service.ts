@@ -54,7 +54,7 @@ console.log(user, tx_ref,amount,'..............')
       phone_number: user.phoneNumber,
       tx_ref,
       callback_url: 'https://webhook.site/your-webhook-url',
-      return_url: 'second_project://payment-success',
+      return_url: 'http://localhost:5000',
       customization: {
         title: 'addis bike',
         description: 'I love online payment',

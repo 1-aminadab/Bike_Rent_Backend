@@ -5,10 +5,7 @@ interface IBike extends Document {
   qrCode: string;
   Type:string;
   status: boolean;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
+  location: mongoose.Types.ObjectId,
   inUse: boolean;
 }
 
@@ -18,10 +15,7 @@ const BikeSchema: Schema = new Schema({
   qrCode: { type: String, required: true,unique:true },
   status: { type: Boolean, required: true, default: true },
   inUse: { type: Boolean, required: true, default: false },
-  location: {
-    latitude: { type: Number, required: false },
-    longitude: { type: Number, required: false },
-  },
+  location: {type: mongoose.Types.ObjectId, ref:"Place" }
 });
 
 export const BikeModel = mongoose.model<IBike>('Bike', BikeSchema);
