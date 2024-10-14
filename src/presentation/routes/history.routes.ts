@@ -10,7 +10,7 @@ router.post('/', historyController.createHistory);
 router.get('/:id', historyController.getHistoryById);
 router.get('/', historyController.getAllHistory);
 // Get history by userId
-router.get('user/:userId', historyController.getHistoryByUserId);
+router.get('/user/:userId', historyController.getHistoryByUserId);
 // Update a history entry
 router.put('/:id', historyController.updateHistory);
 

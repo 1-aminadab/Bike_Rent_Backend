@@ -3,6 +3,8 @@ import { IUser } from '../../domain/interface/user.interface';
 import UserModel  from '../../infrastructure/models/user.model';
 import { logger } from '../../logger';
 import moment from "moment";
+import RouteModel, { IRoute } from '../../infrastructure/models/route.modle';
+import rentalModel  from '../../infrastructure/models/rental.model';
 
 class UserService {
   private checkRestrictedFields(user: Partial<IUser>): void {
@@ -18,6 +20,7 @@ class UserService {
     
     // Filter users by registration date
     const totalUsers = await UserModel.countDocuments({ role: UserRole.User});
+    const totalService = await rentalModel.countDocuments({ status: 'completed'});
 
     const todayUsers = await UserModel.countDocuments({
       createdAt: { $gte: new Date(today.setHours(0, 0, 0, 0)) },role: UserRole.User
@@ -52,6 +55,7 @@ class UserService {
       weekUsers,
       monthUsers,
       lastThreeYearsUsers,
+      totalService
     };
   }
 
@@ -197,10 +201,9 @@ async deleteAdmin(userId: string): Promise<IUser | null> {
   }
 }
 
-async  getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
+async getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
   try {
-    // let startDate, endDate, groupBy, dateFormat, duration;
-    let startDate:any, endDate:any, groupBy:any, dateFormat:any, duration:any, unit:any;
+    let startDate: any, endDate: any, groupBy: any, dateFormat: any, duration: any, unit: any;
 
     const now = moment();
 
@@ -261,17 +264,21 @@ async  getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
       },
     ]);
 
-    // Fill in any missing time slots (optional, for smooth graphs)
+    // Prepare categories and data arrays
     const categories = [];
     const verifiedData = [];
     const unverifiedData = [];
     const totalData = [];
 
     for (let i = 0; i < duration; i++) {
-      const key = startDate.clone().add(i, timeFrame === "today" ? "hours" : "days").format(dateFormat);
-      // const key = startDate.clone().add(i, unit).format(dateFormat); // Use the correct format and time unit
-
-      // const transaction = customerData.find((t) => t._id === i + 1); // Adjust indexing based on groupBy
+      let key;
+      
+      if (timeFrame === "this month") {
+        // For 'this month', use "Week 1", "Week 2", etc.
+        key = `Week ${i + 1}`;
+      } else {
+        key = startDate.clone().add(i, timeFrame === "today" ? "hours" : "days").format(dateFormat);
+      }
 
       const transaction = customerData.find((t) => {
         if (timeFrame === "today") return t._id.hour === i; // Match hours for 'today'
@@ -279,6 +286,7 @@ async  getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
         if (timeFrame === "this month") return t._id.week === startDate.clone().add(i, 'weeks').week(); // Match weeks of the month
         if (timeFrame === "this year") return t._id.month === i + 1; // Match months of the year
       });
+
       categories.push(key);
       verifiedData.push(transaction ? transaction.verifiedCustomers : 0);
       unverifiedData.push(transaction ? transaction.unverifiedCustomers : 0);
@@ -298,6 +306,7 @@ async  getCustomersByTimeFrame(timeFrame: string): Promise<any | null> {
     throw new Error("Error fetching customer data");
   }
 }
+
 
 }
 

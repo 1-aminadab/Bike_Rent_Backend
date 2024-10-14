@@ -43,7 +43,7 @@ class TransactionService {
 // Example of error handling in getTransactionsForToday()
 async getTransactionsByTimeFrame(timeFrame: string) {
   try {
-    let startDate:any, endDate:any, groupBy:any, dateFormat:any, duration:any, unit:any;
+    let startDate: any, endDate: any, groupBy: any, dateFormat: any, duration: any, unit: any;
     const now = moment();
 
     // Define time frame logic
@@ -60,7 +60,7 @@ async getTransactionsByTimeFrame(timeFrame: string) {
         startDate = now.clone().startOf("isoWeek");
         endDate = now.clone().endOf("isoWeek");
         groupBy = { day: { $dayOfWeek: "$createdAt" } };
-        dateFormat = "dddd"; // Format by day of week
+        dateFormat = "dddd"; // Format by day of the week
         duration = 7;
         unit = "days";
         break;
@@ -69,7 +69,7 @@ async getTransactionsByTimeFrame(timeFrame: string) {
         endDate = now.clone().endOf("month");
         groupBy = { week: { $week: "$createdAt" } };
         dateFormat = "Week"; // Format by week number
-        duration = endDate.diff(startDate, 'weeks') + 1; // Weeks in the current month
+        duration = 4; // We assume there are 4 weeks in the month
         unit = "weeks";
         break;
       case "this year":
@@ -115,8 +115,15 @@ async getTransactionsByTimeFrame(timeFrame: string) {
     let totalData = [];
 
     for (let i = 0; i < duration; i++) {
-      // const key = startDate.clone().add(i, timeFrame === "today" ? "hours" : "days").format(dateFormat);
-      const key = startDate.clone().add(i, unit).format(dateFormat); // Use the correct format and time unit
+      let key;
+
+      if (timeFrame === "this month") {
+        // For 'this month', use "Week 1", "Week 2", etc.
+        key = `Week ${i + 1}`;
+      } else {
+        key = startDate.clone().add(i, unit).format(dateFormat); // Use the correct format and time unit
+      }
+
       const transaction = transactions.find((t) => {
         if (timeFrame === "today") return t._id.hour === i; // Match hours for 'today'
         if (timeFrame === "this week") return t._id.day === i + 1; // Match days of the week
@@ -143,6 +150,7 @@ async getTransactionsByTimeFrame(timeFrame: string) {
     throw new Error("Error fetching transaction data");
   }
 }
+
 
 
 

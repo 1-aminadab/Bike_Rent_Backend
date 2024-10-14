@@ -55,7 +55,7 @@ class PaymentService {
       phone_number: user.phoneNumber,
       tx_ref,
       callback_url: 'https://webhook.site/your-webhook-url',
-      return_url: 'http://addisbike.com',
+      return_url: 'http://localhost:5000',
       customization: {
         title: 'addis bike',
         description: 'I love online payment',

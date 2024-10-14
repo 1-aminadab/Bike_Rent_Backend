@@ -19,6 +19,6 @@ router.post('/:id/data', trackingController.addTrackingData);
 router.patch('/:id/status', trackingController.updateStatus);
 
 // Delete tracking
-router.delete('/tracking/:id', trackingController.deleteTracking);
+router.delete('/:id', trackingController.deleteTracking);
 
 export default router;

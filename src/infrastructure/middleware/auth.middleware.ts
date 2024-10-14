@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from '../../domain/interface/auth.interface';
 import { TokenManager } from '../utils/token-manager';
 
 export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const token =  req.headers['authorization'].split(' ')[1];
+  const token =  req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Access Denied' });
