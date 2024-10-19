@@ -15,6 +15,11 @@ PaymentRouter.get('/verify', transactionController.verifyTransaction);
 PaymentRouter.get('/revenue',authenticateJWT,authorizeRoles('admin'), transactionController.getTotalRevenue);
 PaymentRouter.get('/payment_method', transactionController.filterTransactionsByMethod);
 PaymentRouter.get('/transactions/:timeFrame', transactionController.getTransactionsByTimeFrame);
+
+PaymentRouter.patch('/:id', transactionController.updateTransaction);
+PaymentRouter.delete('/:id', transactionController.deleteTransaction);
+PaymentRouter.get('/status/:status', transactionController.getTransactionByStatus);
+
 export default PaymentRouter;
 
 

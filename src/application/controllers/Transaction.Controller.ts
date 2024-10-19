@@ -75,6 +75,53 @@ class TransactionController {
 
 
 
+
+  async getTransactionByStatus(req: Request, res: Response) {
+    try {
+      const { status } = req.params;
+      const data  = await transactionService.getTransactionByStatus(status);
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: 'Transaction not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating transaction', error });
+    }
+  }
+
+
+   // Update a transaction
+   async updateTransaction(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const data  = await transactionService.updateTransaction(id, updateData);
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: 'Transaction not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating transaction', error });
+    }
+  }
+
+
+  // Delete a transaction
+  async deleteTransaction(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { message } = await transactionService.deleteTransaction(id);
+      if (message === 'Transaction deleted successfully') {
+        res.status(200).json({ message });
+      } else {
+        res.status(404).json({ message: 'Transaction not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting transaction', error });
+    }
+  }
 }
 
 export const transactionController = new TransactionController();

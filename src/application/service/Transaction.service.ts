@@ -1,30 +1,92 @@
-// services/TransactionService.ts
-
 import { TransactionModel } from "../../infrastructure/models/TransactionModel";
 import moment from "moment";
 
 // import { TransactionModel } from '../models/TransactionModel';
 // services/TransactionService.ts
+
 class TransactionService {
   // Fetch all transactions
   async getAllTransactions() {
     return await TransactionModel.find().sort({ updatedAt: -1, createdAt: -1 });
+    try {
+      const transactions = await TransactionModel.find();
+      return transactions
+    } catch (error) {
+      return { status: "error", message: "Failed to fetch transactions", error };
+    }
   }
 
   // Fetch transactions for a specific user
   async getTransactionsByUser(userId: string) {
-    return await TransactionModel.find({ user_id: userId });
+    try {
+      const transactions = await TransactionModel.find({ user_id: userId });
+      return transactions
+    } catch (error) {
+      return { status: "error", message: "Failed to fetch transactions for the user", error };
+    }
   }
 
   // Save a new transaction
   async createTransaction(transactionData: any) {
-    const transaction = new TransactionModel(transactionData);
-    return await transaction.save();
+    try {
+      const transaction = new TransactionModel(transactionData);
+      const savedTransaction = await transaction.save();
+      return savedTransaction;
+    } catch (error) {
+      return { status: "error", message: "Failed to create transaction", error };
+    }
   }
 
   // Verify transaction by tx_ref
   async verifyTransaction(tx_ref: string) {
-    return await TransactionModel.findOne({ tx_ref });
+    try {
+      const transaction = await TransactionModel.findOne({ tx_ref });
+      if (!transaction) {
+        return { status: "error", message: "Transaction not found" };
+      }
+      return transaction;
+    } catch (error) {
+      return { status: "error", message: "Failed to verify transaction", error };
+    }
+  }
+
+  // Update a transaction
+  async getTransactionByStatus(status: string,) {
+    try {
+      const transactions = await TransactionModel.find({status});
+      return transactions
+    } catch (error) {
+      return { status: "error", message: "Failed to update transaction", error };
+    }
+  }
+  // Update a transaction
+  async updateTransaction(transactionId: string, updateData: any) {
+    try {
+      const updatedTransaction = await TransactionModel.findByIdAndUpdate(
+        transactionId,
+        updateData,
+        { new: true }
+      );
+      if (!updatedTransaction) {
+        return { status: "error", message: "Transaction not found" };
+      }
+      return updatedTransaction
+    } catch (error) {
+      return { status: "error", message: "Failed to update transaction", error };
+    }
+  }
+
+  // Delete a transaction
+  async deleteTransaction(transactionId: string) {
+    try {
+      const deletedTransaction = await TransactionModel.findByIdAndDelete(transactionId);
+      if (!deletedTransaction) {
+        return { status: "error", message: "Transaction not found" };
+      }
+      return { status: "success", message: "Transaction deleted successfully" };
+    } catch (error) {
+      return { status: "error", message: "Failed to delete transaction", error };
+    }
   }
 
   // Get total revenue
