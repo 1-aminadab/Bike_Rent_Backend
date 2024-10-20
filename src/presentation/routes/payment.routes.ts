@@ -17,6 +17,10 @@ PaymentRouter.get('/payment_method', transactionController.filterTransactionsByM
 PaymentRouter.get('/transactions/:timeFrame', transactionController.getTransactionsByTimeFrame);
 
 PaymentRouter.patch('/:id', transactionController.updateTransaction);
+PaymentRouter.get('/:id', transactionController.getTransaction);
+
+PaymentRouter.post('/create', transactionController.createTransaction);
+
 PaymentRouter.delete('/:id', transactionController.deleteTransaction);
 PaymentRouter.get('/status/:status', transactionController.getTransactionByStatus);
 

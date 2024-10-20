@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { TransactionModel } from '../../infrastructure/models/TransactionModel';
 import UserModel from "../../infrastructure/models/user.model";
+import { PaymentType } from '../../domain/enums/user.enum';
 require('dotenv').config();
 
 class PaymentService {
@@ -36,6 +37,9 @@ class PaymentService {
 
   // Create the payment request to Chapa
   async initializePayment(userId: string, amount: number, payment_method: string) {
+    console.log('====================================');
+    console.log(userId);
+    console.log('====================================');
     const user = await this.getUserById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -44,8 +48,11 @@ class PaymentService {
     const tx_ref = this.generateTxRef();
 
     // Save the transaction in the database with 'pending' status
-    await this.saveTransaction(user, amount, tx_ref, payment_method);
+    const transaction = await this.saveTransaction(user, amount, tx_ref, payment_method);
 
+    if(payment_method === PaymentType.Cash){
+      return transaction;
+    }
     const payload = {
       amount: amount.toString(),
       currency: 'ETB',
@@ -63,7 +70,6 @@ class PaymentService {
       status: 'pending',  // Add the status field to the payload
       payment_method: payment_method, // Include payment method in the payload
     };
-   console.log(payload)
     const headers = {
       Authorization: `Bearer ${this.barrierToken}`,
     };

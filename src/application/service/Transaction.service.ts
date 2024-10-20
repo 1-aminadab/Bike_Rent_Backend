@@ -59,6 +59,18 @@ class TransactionService {
       return { status: "error", message: "Failed to update transaction", error };
     }
   }
+  async getTransaction(transactionId: string) {
+    try {
+      const transaction = await TransactionModel.findById(transactionId);
+      if (!transaction) {
+        return { status: "error", message: "Transaction not found" };
+      }
+      return transaction
+    } catch (error) {
+      return { status: "error", message: "Failed to update transaction", error };
+    }
+  }
+
   // Update a transaction
   async updateTransaction(transactionId: string, updateData: any) {
     try {

@@ -90,6 +90,35 @@ class TransactionController {
     }
   }
 
+  // Update a transaction
+  async createTransaction(req: Request, res: Response) {
+    try {
+      const {transactionData} = req.body;
+      const data  = await transactionService.createTransaction(transactionData);
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res.status(404).json({ message: 'Transaction not created' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating transaction', error });
+    }
+  }
+
+     // Update a transaction
+     async getTransaction(req: Request, res: Response) {
+      try {
+        const { id } = req.params;
+        const data  = await transactionService.getTransaction(id);
+        if (data) {
+          res.status(200).json(data);
+        } else {
+          res.status(404).json({ message: 'Transaction not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ message: 'Error updating transaction', error });
+      }
+    }
 
    // Update a transaction
    async updateTransaction(req: Request, res: Response) {
