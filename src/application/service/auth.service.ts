@@ -57,24 +57,23 @@ class AuthService {
 
       const hashedPassword = await this.hashPassword(userDto.password);
 
-      const user = new UserModel({ ...userDto, password: hashedPassword });
-      await user.save();
 
-      // const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
+      const otpResponse = await otpService.sendOtp(userDto.phoneNumber);
 
-      // if (!otpResponse) {
-      //   throw { status: 500, message: "Failed to send OTP" };
-      // }
+      if (!otpResponse) {
+        throw { status: 500, message: "Failed to send OTP" };
+      }
 
-      // const verificationId = otpResponse;
-      // this.temporaryUserStore.set(verificationId, { ...userDto, password: hashedPassword });
+      const verificationId = otpResponse;
+      this.temporaryUserStore.set(verificationId, { ...userDto, password: hashedPassword });
 
-      // logger.info(`OTP sent to ${userDto.phoneNumber}`);
+      logger.info(`OTP sent to ${userDto.phoneNumber}`);
 
       return {
         success: true,
         message: "OTP sent. Please verify to complete registration.",
-        verificationId: userDto,
+        verificationId: verificationId,
+        user: userDto,
       };
     } catch (error:any) {
       logger.error(`Register service error: ${error.message}`);

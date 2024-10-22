@@ -36,8 +36,8 @@ class HistoryService {
         return {
           bikeId: bike?.bikeId || 'Unknown',
           userName: `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`.trim(),
-          timeUsed: rental?.start_time && rental?.updated_at ? `${this.calculateTimeUsed(rental.start_time, rental.updated_at)}` : 'N/A',
-          startTime: rental?.start_time ? rental.start_time : 'N/A',
+          timeUsed: rental?.created_at && rental?.updated_at ? `${this.calculateTimeUsed(rental.created_at, rental.updated_at)}` : 'N/A',
+          startTime: rental?.updated_at ? rental.updated_at : 'N/A',
           nationalIdNumber: user?.nationalIdNumber || 'Unknown',
           previousRides: await this.getPreviousRidesCount(user?._id), // Fetch previous rides count
           verificationStatus: user?.verified || false,
