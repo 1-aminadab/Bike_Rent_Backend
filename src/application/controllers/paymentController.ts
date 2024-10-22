@@ -1,12 +1,13 @@
 // controllers/PaymentController.ts
 import { Request, Response } from 'express';
 import { paymentService } from '../service/PaymentService.service';
+import { PaymentType } from '../../domain/enums/user.enum';
 
 
 class PaymentController {
   async initiatePayment(req: Request, res: Response) {
     try {
-      const { userId, amount, payment_method ="electronic"} = req.body;
+      const { userId, amount, payment_method = PaymentType.Electronic} = req.body;
 
       // Call the service to initialize payment
       const paymentResponse = await paymentService.initializePayment(userId, amount, payment_method);

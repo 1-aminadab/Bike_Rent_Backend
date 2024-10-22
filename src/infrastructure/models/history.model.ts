@@ -15,7 +15,7 @@ const HistorySchema: Schema = new Schema({
   bike_id: { type: String, required: true },
   rental_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Rental', required: true },
   payment_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment', required: true },
-  tracking_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Tracking', required: true },
+  tracking_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Tracking', required: false },
   created_at: { type: Date, default: Date.now },
 });
 

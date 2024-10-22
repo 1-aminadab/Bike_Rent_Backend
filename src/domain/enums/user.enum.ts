@@ -3,3 +3,8 @@ export enum UserRole {
     SubAdmin = 'sub_admin',
     User = 'user'
 };
+
+export enum PaymentType {
+  Electronic = 'electronic',
+  Cash = 'cash'
+}

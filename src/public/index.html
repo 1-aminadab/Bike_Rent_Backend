@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Bike-Rent-Backend</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect to App</title>
+    <script type="text/javascript">
+        function redirectToApp() {
+            // Try to open the app using the custom URL scheme
+            window.location.href = "second_project://payment";
+
+            // Fallback to an app store or website if the app is not installed
+            setTimeout(function() {
+                window.location.href = "https://example.com/fallback"; // Replace with your fallback URL
+            }, 2000); // 2-second delay
+        }
+    </script>
 </head>
-
-<body>
-  <h1>Node Server Started!!!</h1>
+<body onload="redirectToApp()">
+    <a href="second_project://payment">Redirecting to the app...</a>
 </body>
-
 </html>
