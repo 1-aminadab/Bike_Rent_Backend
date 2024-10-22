@@ -38,7 +38,7 @@ export class PasswordResetService {
     try {
       const query = verificationId ? `vc=${verificationId}&code=${receivedOtp}` : `to=${phoneNumber}&code=${receivedOtp}`;
       const url = `https://api.afromessage.com/api/verify?${query}`;
-      const token = "YOUR_ACTUAL_TOKEN"; // Replace with your actual token
+      const token = "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs"; // Replace with your actual token
 
       const response = await fetch(url, {
         method: "GET",
@@ -66,7 +66,7 @@ export class PasswordResetService {
     try {
       const query = verificationId ? `vc=${verificationId}&code=${receivedOtp}` : `to=${phoneNumber}&code=${receivedOtp}`;
       const url = `https://api.afromessage.com/api/verify?${query}`;
-      const token = "YOUR_ACTUAL_TOKEN"; // Replace with your actual token
+      const token = "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs"; // Replace with your actual token
 
       const response = await fetch(url, {
         method: "GET",
@@ -155,8 +155,18 @@ export class PasswordResetService {
       // "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoiaEYyajlCSkFjZ2UxZ1VsTk56NllPYnlKbWRuR0F4S04iLCJleHAiOjE4ODMyNDI2ODgsImlhdCI6MTcyNTQ3NjI4OCwianRpIjoiMzNmYTJjMWUtODZiOC00NzgxLTkyZjItZjNjMzVlMDgxN2I5In0.6Vdj4nlL81xVd6JlAC4X-a0NO0WaQAiU7vHr0h33BOs	"; // Replace with your actual token
     const identifier = process.env.AFRO_IDENTIFIER; // Replace with your actual identifier
     const sender = ""; // Replace with your actual sender name
+    const callback = ""; // Optional: Replace with your actual callback URL
+    const messagePrefix = "addis bike verification code is: "; // Optional: Customize the message prefix
+    const messagePostfix = "thanks for registering"; // Optional: Customize the message postfix
+    const spacesBefore = 0; // Optional: Customize spaces before the OTP
+    const spacesAfter = 0; // Optional: Customize spaces after the OTP
+    const ttl = 300; // OTP valid for 5 minutes (300 seconds)
+    const codeLength = 4; // OTP length
+    const codeType = 0; // 0 for numeric OTP, change if needed
 
-    const url = `${base_url}?from=${identifier}&sender=${sender}&to=${phoneNumber}&ttl=300&len=4&t=0`;
+    // const url = `${base_url}?from=${identifier}&sender=${sender}&to=${phoneNumber}&ttl=300&len=4&t=0`;
+    const url = `${base_url}?from=${identifier}&sender=${sender}&to=${phoneNumber}&pr=${messagePrefix}&ps=${messagePostfix}&sb=${spacesBefore}&sa=${spacesAfter}&ttl=${ttl}&len=${codeLength}&t=${codeType}&callback=${callback}`;
+
 
     try {
       const response:any = await axios.get(url, {
@@ -164,7 +174,7 @@ export class PasswordResetService {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log(response, "........./");
       if (response.data.acknowledge === "success") {
         logger.info("OTP sent successfully");
         return response.data;

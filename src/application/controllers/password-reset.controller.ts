@@ -54,7 +54,7 @@ class PasswordResetController {
       // const token = authHeader && authHeader.split(' ')[1];
       const {phoneNumber,verificationId}= req.body
       const { receivedOtp } = req.params;
-      console.log(phoneNumber,verificationId,receivedOtp)
+      console.log(phoneNumber,verificationId,receivedOtp,'......')
       // if (!token || !receivedOtp) {
       //   return res.status(400).json({ errors: [{ msg: 'Token and OTP are required' }] });
       // }
